@@ -1,3 +1,14 @@
+## 0.1.2
+
+- **Optimized Real User Pass Rate & Reduced False Screen Replay Spoof Rejections**:
+  - **Neural Certainty Safeguard Calibration**: Re-calibrated multi-factor heuristic override rules to prevent soft micro-texture variations, screen grid highlights, or ambient chrominance shifts from causing false spoof rejections on genuine live faces.
+  - **Protected Positive Neural Real Scores**: When the neural model classifies a face as live (`rawResult.logitDiff >= 0.0`), genuine real user selfie frames are preserved as `LivenessStatus.real`, reserving spoof status overrides strictly for unequivocal physical attack signals like Moiré FFT interference fringes (`isMoireSpoof`) or print halftone patterns (`isPrintSpoof`).
+  - **Calibrated Sub-Pixel Grid & Emissive Thresholds**: Raised HOG grid dominance cutoff ($\ge 0.380$) and chrominance variance requirement ($\ge 200.0 / 220.0$) to eliminate false positives on high-end modern smartphones (e.g. OLED screen reflections under bright office/indoor lighting).
+  - **Removed Borderline Screen Replay Overrides**: Eliminated aggressive borderline heuristics that previously triggered false `screenReplaySpoof` classifications on high-detail facial features.
+- **Diagnostics & Code Quality**:
+  - **Enhanced Diagnostic Logging**: Refactored `LivenessLogger` format outputs for cleaner crop stats, tensor data, and inference logging.
+  - **Static Analysis & Lint Standardizations**: Fixed code lints and type annotations across all core heuristic analyzers (`ImagePreprocessor`, `HighResScreenAnalyzer`, `ColorSpaceAnalyzer`, `FftMoireAnalyzer`, `LbpHogAnalyzer`, `FaceProximityGate`).
+
 ## 0.1.1
 
 - **Expanded Flutter & Dart Compatibility**: Widened environment constraints to support Dart SDK `sdk: ">=3.0.0 <4.0.0"` and Flutter `flutter: ">=3.10.0"`.

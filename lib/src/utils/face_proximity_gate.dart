@@ -1,20 +1,8 @@
-import '../models/face_bounding_box.dart';
-import '../models/liveness_result.dart';
+import 'package:passive_liveness/src/models/face_bounding_box.dart';
+import 'package:passive_liveness/src/models/liveness_result.dart';
 
 /// Result of evaluating face proximity and aspect ratio constraints.
 class FaceGateResult {
-  /// Whether the face bounding box passes proximity and aspect ratio checks.
-  final bool isValid;
-
-  /// Specific failure status if invalid (`tooFar`, `tooClose`, or `invalidAspectRatio`).
-  final LivenessStatus status;
-
-  /// Calculated ratio of face area relative to overall camera frame area ($0.0 \dots 1.0$).
-  final double faceAreaRatio;
-
-  /// Calculated aspect ratio ($\text{width} / \text{height}$) of the face bounding box.
-  final double aspectRatio;
-
   const FaceGateResult({
     required this.isValid,
     required this.status,
@@ -34,23 +22,26 @@ class FaceGateResult {
       aspectRatio: aspectRatio,
     );
   }
+
+  /// Whether face bounding box passes proximity and aspect ratio checks.
+  final bool isValid;
+
+  /// Specific failure status if invalid (`tooFar`, `tooClose`, or
+  /// `invalidAspectRatio`).
+  final LivenessStatus status;
+
+  /// Calculated ratio of face area relative to overall camera frame area
+  /// ($0.0 \dots 1.0$).
+  final double faceAreaRatio;
+
+  /// Calculated aspect ratio ($\text{width} / \text{height}$) of face
+  /// bounding box.
+  final double aspectRatio;
 }
 
 /// Evaluates face area coverage and bounding box aspect ratios to reject
 /// presentation attacks using small printed photos or extreme lens close-ups.
 class FaceProximityGate {
-  /// Minimum allowed face area ratio relative to frame size (default: 5% / 0.05).
-  final double minFaceAreaRatio;
-
-  /// Maximum allowed face area ratio relative to frame size (default: 85% / 0.85).
-  final double maxFaceAreaRatio;
-
-  /// Minimum valid face bounding box aspect ratio (width / height, default: 0.50).
-  final double minAspectRatio;
-
-  /// Maximum valid face bounding box aspect ratio (width / height, default: 1.25).
-  final double maxAspectRatio;
-
   /// Creates a [FaceProximityGate] with customizable thresholds.
   const FaceProximityGate({
     this.minFaceAreaRatio = 0.05,
@@ -59,7 +50,20 @@ class FaceProximityGate {
     this.maxAspectRatio = 1.25,
   });
 
-  /// Evaluates a [boundingBox] against camera frame dimensions ([frameWidth], [frameHeight]).
+  /// Minimum allowed face area ratio relative to frame size (default: 5%).
+  final double minFaceAreaRatio;
+
+  /// Maximum allowed face area ratio relative to frame size (default: 85%).
+  final double maxFaceAreaRatio;
+
+  /// Minimum valid face bounding box aspect ratio (default: 0.50).
+  final double minAspectRatio;
+
+  /// Maximum valid face bounding box aspect ratio (default: 1.25).
+  final double maxAspectRatio;
+
+  /// Evaluates a [boundingBox] against camera frame dimensions
+  /// ([frameWidth], [frameHeight]).
   FaceGateResult evaluate({
     required FaceBoundingBox boundingBox,
     required int frameWidth,
@@ -70,8 +74,8 @@ class FaceProximityGate {
       return const FaceGateResult(
         isValid: false,
         status: LivenessStatus.tooFar,
-        faceAreaRatio: 0.0,
-        aspectRatio: 1.0,
+        faceAreaRatio: 0,
+        aspectRatio: 1,
       );
     }
 

@@ -1,6 +1,6 @@
 name: passive_liveness
 description: "Ultra-lightweight passive face liveness detection using native TFLite (Google Play Services on Android, TensorFlowLiteSwift on iOS) for Flutter."
-version: 0.1.1
+version: 0.1.2
 homepage: https://github.com/andikatp/passive_liveness
 repository: https://github.com/andikatp/passive_liveness
 issue_tracker: https://github.com/andikatp/passive_liveness/issues
@@ -14,9 +14,10 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
+  very_good_analysis: ^11.0.0
 
 flutter:
   plugin:

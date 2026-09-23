@@ -1,3 +1,4 @@
+// Diagnostic full matrix test.
 // ignore_for_file: avoid_print
 
 import 'dart:io';
@@ -18,13 +19,13 @@ void main() {
       ..sort((a, b) => a.path.compareTo(b.path));
 
     print(
-      '\n==============================================================================================================',
+      '\n========================================================',
     );
     print(
-      'FILENAME            | EXPECTED | CHROM_VAR | MEAN_CB | MEAN_CR | LAP_VAR   | DISPERSAL | LBP_RATIO | HOG_DOM',
+      'FILENAME | EXPECTED | CHROM_VAR | MEAN_CB | MEAN_CR',
     );
     print(
-      '--------------------+----------+-----------+---------+---------+-----------+-----------+-----------+---------',
+      '--------------------------------------------------------',
     );
 
     for (final file in files) {
@@ -42,9 +43,7 @@ void main() {
       final frameInfo = await codec.getNextFrame();
       final imgWidth = frameInfo.image.width;
       final imgHeight = frameInfo.image.height;
-      final rawByteData = await frameInfo.image.toByteData(
-        format: ui.ImageByteFormat.rawRgba,
-      );
+      final rawByteData = await frameInfo.image.toByteData();
       frameInfo.image.dispose();
       codec.dispose();
 
@@ -83,18 +82,17 @@ void main() {
       final expected = fileName.contains('real') ? 'REAL' : 'SPOOF';
 
       print(
-        '${fileName.padRight(19)} | ${expected.padRight(8)} | '
-        '${colorRes.chrominanceVariance.toStringAsFixed(1).padRight(9)} | '
-        '${textureRes.lbpNonUniformRatio.toStringAsFixed(3).padRight(9)} | '
-        '${textureRes.hogPeakDominance.toStringAsFixed(3).padRight(7)} | '
-        '${highResRes.laplacianVariance.toStringAsFixed(1).padRight(9)} | '
-        '${highResRes.patchLaplacianDispersal.toStringAsFixed(3).padRight(9)} | '
-        '${colorRes.saturationVariance.toStringAsFixed(4).padRight(9)}',
+        '${fileName.padRight(15)} | ${expected.padRight(6)} | '
+        '${colorRes.chrominanceVariance.toStringAsFixed(1)} | '
+        '${textureRes.lbpNonUniformRatio.toStringAsFixed(3)} | '
+        '${textureRes.hogPeakDominance.toStringAsFixed(3)} | '
+        '${highResRes.laplacianVariance.toStringAsFixed(1)} | '
+        '${highResRes.patchLaplacianDispersal.toStringAsFixed(3)} | '
+        '${colorRes.saturationVariance.toStringAsFixed(4)}',
       );
     }
     print(
-      '==============================================================================================================\n',
+      '========================================================\n',
     );
   });
 }
-

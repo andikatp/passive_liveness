@@ -3,6 +3,7 @@
 [![pub package](https://img.shields.io/pub/v/passive_liveness.svg)](https://pub.dev/packages/passive_liveness)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Platform](https://img.shields.io/badge/platform-flutter%20%7C%20android%20%7C%20ios-blue.svg)](https://pub.dev/packages/passive_liveness)
+[![style: very good analysis](https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)](https://pub.dev/packages/very_good_analysis)
 
 An ultra-lightweight, high-performance passive face anti-spoofing (liveness) detection package for Flutter powered by **Native TensorFlow Lite** edge inference on Android (Google Play Services) and iOS (`TensorFlowLiteSwift`).
 

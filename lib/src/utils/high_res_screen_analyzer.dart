@@ -1,15 +1,30 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:passive_liveness/passive_liveness.dart' show ImagePreprocessor;
+
+import 'package:passive_liveness/src/utils/image_preprocessor.dart'
+    show ImagePreprocessor;
+
 /// Result of evaluating high-resolution screen replay indicators.
 class HighResScreenAnalysisResult {
+  const HighResScreenAnalysisResult({
+    required this.laplacianVariance,
+    required this.patchLaplacianDispersal,
+    required this.specularHighlightRatio,
+    required this.isHighResScreenSpoof,
+    this.faceLaplacianVariance = 0.0,
+    this.backgroundLaplacianVariance = 0.0,
+    this.is2DFlatSpoof = false,
+  });
+
   /// Global Laplacian variance ($\sigma^2_{\text{Lap}}$) measuring high-frequency image energy.
   final double laplacianVariance;
 
-  /// Dispersal (variance of variances) of Laplacian energy across local patches ($\sigma^2_{\text{PatchLap}}$).
-  ///
-  /// Real 3D faces have natural depth-of-field variations across facial features ($\ge 4.0$).
-  /// 2D screen replays have a uniform focal plane resulting in low dispersal ($< 4.0$).
+  /// Real 3D faces have natural depth-of-field variations across facial
+  /// features ($\ge 4.0$).
+  /// 2D screen replays have a uniform focal plane resulting in low
+  /// dispersal ($< 4.0$).
   final double patchLaplacianDispersal;
 
   /// Ratio of high-brightness specular reflection pixels ($0.0 \dots 1.0$).
@@ -26,40 +41,32 @@ class HighResScreenAnalysisResult {
 
   /// Whether the image exhibits 2D flat focal plane characteristics.
   ///
-  /// Real 3D faces have depth-of-field differences between face and background,
-  /// producing a large Laplacian delta. Screens and prints are uniformly focused
-  /// with near-zero delta.
+  /// Real 3D faces have depth-of-field differences between face and
+  /// background, producing a large Laplacian delta. Screens and prints are
+  /// uniformly focused with near-zero delta.
   final bool is2DFlatSpoof;
-
-  const HighResScreenAnalysisResult({
-    required this.laplacianVariance,
-    required this.patchLaplacianDispersal,
-    required this.specularHighlightRatio,
-    required this.isHighResScreenSpoof,
-    this.faceLaplacianVariance = 0.0,
-    this.backgroundLaplacianVariance = 0.0,
-    this.is2DFlatSpoof = false,
-  });
 }
 
 /// Evaluates 2D Laplacian frequency variance, patch focus depth dispersal,
-/// and specular screen reflections to detect high-resolution OLED/Retina screen replay attacks.
+/// and specular screen reflections to detect high-resolution OLED/Retina
+/// screen replay attacks.
 class HighResScreenAnalyzer {
-  /// Minimum relative patch Laplacian dispersal (CV = std / mean) for a genuine 3D face (default: 0.35).
-  /// Values below this indicate extremely flat 2D screen focal planes.
-  /// This is intentionally conservative to avoid false positives on real faces.
+  const HighResScreenAnalyzer({
+    this.minPatchDispersalThreshold = 0.35,
+    this.maxSpecularRatioThreshold = 0.030,
+  });
+
+  /// Minimum relative patch Laplacian dispersal (CV = std / mean) for a
+  /// genuine 3D face (default: 0.35). Values below this indicate extremely
+  /// flat 2D screen focal planes.
   final double minPatchDispersalThreshold;
 
   /// Specular highlight ratio upper bound threshold (default: 0.030).
   /// High values indicate glass screen reflection hotspots.
   final double maxSpecularRatioThreshold;
 
-  const HighResScreenAnalyzer({
-    this.minPatchDispersalThreshold = 0.35,
-    this.maxSpecularRatioThreshold = 0.030,
-  });
-
-  /// Analyzes a grayscale crop ([width] x [height] Uint8List) extracted from [ImagePreprocessor].
+  /// Analyzes a grayscale crop ([width] x [height] Uint8List) extracted from
+  /// [ImagePreprocessor].
   HighResScreenAnalysisResult analyzeGrayscaleCrop(
     Uint8List grayBytes,
     int width,
@@ -67,25 +74,23 @@ class HighResScreenAnalyzer {
   ) {
     if (width < 32 || height < 32 || grayBytes.length < width * height) {
       return const HighResScreenAnalysisResult(
-        laplacianVariance: 0.0,
-        patchLaplacianDispersal: 10.0,
-        specularHighlightRatio: 0.0,
+        laplacianVariance: 0,
+        patchLaplacianDispersal: 10,
+        specularHighlightRatio: 0,
         isHighResScreenSpoof: false,
-        faceLaplacianVariance: 0.0,
-        backgroundLaplacianVariance: 0.0,
-        is2DFlatSpoof: false,
       );
     }
 
-    // 1. Calculate global 2D Laplacian response L(x, y) = 4*I(x,y) - I(x+1,y) - I(x-1,y) - I(x,y+1) - I(x,y-1)
+    // 1. Calculate global 2D Laplacian response L(x, y) = 4*I(x,y) - I(x+1,y)
+    // - I(x-1,y) - I(x,y+1) - I(x,y-1)
     final laplacianValues = Float64List((width - 2) * (height - 2));
-    double sumLap = 0.0;
-    int lapCount = 0;
-    int specularCount = 0;
+    var sumLap = 0.0;
+    var lapCount = 0;
+    var specularCount = 0;
 
-    for (int y = 1; y < height - 1; y++) {
+    for (var y = 1; y < height - 1; y++) {
       final yOffset = y * width;
-      for (int x = 1; x < width - 1; x++) {
+      for (var x = 1; x < width - 1; x++) {
         final center = grayBytes[yOffset + x];
 
         // Specular highlight pixel check (high brightness >= 245)
@@ -109,19 +114,16 @@ class HighResScreenAnalyzer {
 
     if (lapCount == 0) {
       return const HighResScreenAnalysisResult(
-        laplacianVariance: 0.0,
-        patchLaplacianDispersal: 10.0,
-        specularHighlightRatio: 0.0,
+        laplacianVariance: 0,
+        patchLaplacianDispersal: 10,
+        specularHighlightRatio: 0,
         isHighResScreenSpoof: false,
-        faceLaplacianVariance: 0.0,
-        backgroundLaplacianVariance: 0.0,
-        is2DFlatSpoof: false,
       );
     }
 
     final meanLap = sumLap / lapCount;
-    double varLap = 0.0;
-    for (int i = 0; i < lapCount; i++) {
+    var varLap = 0.0;
+    for (var i = 0; i < lapCount; i++) {
       final diff = laplacianValues[i] - meanLap;
       varLap += diff * diff;
     }
@@ -133,26 +135,24 @@ class HighResScreenAnalyzer {
     final patchWidth = width ~/ gridCols;
     final patchHeight = height ~/ gridRows;
     final patchVariances = Float64List(gridCols * gridRows);
-    int validPatches = 0;
+    var validPatches = 0;
 
-    for (int py = 0; py < gridRows; py++) {
+    for (var py = 0; py < gridRows; py++) {
       final startY = py * patchHeight;
       final endY = (py + 1) * patchHeight;
 
-      for (int px = 0; px < gridCols; px++) {
+      for (var px = 0; px < gridCols; px++) {
         final startX = px * patchWidth;
         final endX = (px + 1) * patchWidth;
 
-        double pSum = 0.0;
-        int pCount = 0;
+        var pSum = 0.0;
+        var pCount = 0;
 
-        for (int y = math.max(1, startY); y < math.min(height - 1, endY); y++) {
+        for (var y = math.max(1, startY); y < math.min(height - 1, endY); y++) {
           final yOffset = y * width;
-          for (
-            int x = math.max(1, startX);
-            x < math.min(width - 1, endX);
-            x++
-          ) {
+          for (var x = math.max(1, startX);
+              x < math.min(width - 1, endX);
+              x++) {
             final center = grayBytes[yOffset + x];
             final left = grayBytes[yOffset + x - 1];
             final right = grayBytes[yOffset + x + 1];
@@ -167,19 +167,15 @@ class HighResScreenAnalyzer {
 
         if (pCount > 0) {
           final pMean = pSum / pCount;
-          double pVar = 0.0;
+          var pVar = 0.0;
 
-          for (
-            int y = math.max(1, startY);
-            y < math.min(height - 1, endY);
-            y++
-          ) {
+          for (var y = math.max(1, startY);
+              y < math.min(height - 1, endY);
+              y++) {
             final yOffset = y * width;
-            for (
-              int x = math.max(1, startX);
-              x < math.min(width - 1, endX);
-              x++
-            ) {
+            for (var x = math.max(1, startX);
+                x < math.min(width - 1, endX);
+                x++) {
               final center = grayBytes[yOffset + x];
               final left = grayBytes[yOffset + x - 1];
               final right = grayBytes[yOffset + x + 1];
@@ -197,16 +193,16 @@ class HighResScreenAnalyzer {
       }
     }
 
-    double patchDispersal = 0.0;
+    var patchDispersal = 0.0;
     if (validPatches > 1) {
-      double sumPVar = 0.0;
-      for (int i = 0; i < validPatches; i++) {
+      var sumPVar = 0.0;
+      for (var i = 0; i < validPatches; i++) {
         sumPVar += patchVariances[i];
       }
       final meanPVar = sumPVar / validPatches;
 
-      double varPVar = 0.0;
-      for (int i = 0; i < validPatches; i++) {
+      var varPVar = 0.0;
+      for (var i = 0; i < validPatches; i++) {
         final diff = patchVariances[i] - meanPVar;
         varPVar += diff * diff;
       }
@@ -216,26 +212,27 @@ class HighResScreenAnalyzer {
       patchDispersal = meanPVar > 0 ? (stdPVar / meanPVar) : 0.0;
     }
 
-    // High-resolution screen replays feature flat/uniform focus dispersal (low CV) or high specular glare
-    final isHighResScreenSpoof =
-        patchDispersal < minPatchDispersalThreshold ||
+    // High-resolution screen replays feature flat/uniform focus dispersal
+    // (low CV) or high specular glare
+    final isHighResScreenSpoof = patchDispersal < minPatchDispersalThreshold ||
         specularRatio > maxSpecularRatioThreshold;
 
-    // 2D Flatness Check: Face (center 50%) vs Background (outer ring) Laplacian delta.
-    // Real 3D faces have depth-of-field differences; screens/prints are uniformly focused.
+    // 2D Flatness Check: Face (center 50%) vs Background (outer ring)
+    // Laplacian delta. Real 3D faces have depth-of-field differences;
+    // screens/prints are uniformly focused.
     final centerStartX = width ~/ 4;
     final centerStartY = height ~/ 4;
     final centerEndX = width * 3 ~/ 4;
     final centerEndY = height * 3 ~/ 4;
 
-    double faceLapSum = 0.0;
-    int faceLapCount = 0;
-    double bgLapSum = 0.0;
-    int bgLapCount = 0;
+    var faceLapSum = 0.0;
+    var faceLapCount = 0;
+    var bgLapSum = 0.0;
+    var bgLapCount = 0;
 
-    for (int y = 1; y < height - 1; y++) {
+    for (var y = 1; y < height - 1; y++) {
       final yOffset = y * width;
-      for (int x = 1; x < width - 1; x++) {
+      for (var x = 1; x < width - 1; x++) {
         final center = grayBytes[yOffset + x];
         final left = grayBytes[yOffset + x - 1];
         final right = grayBytes[yOffset + x + 1];
@@ -257,15 +254,19 @@ class HighResScreenAnalyzer {
       }
     }
 
-    double faceLapVar = 0.0;
-    double bgLapVar = 0.0;
+    var faceLapVar = 0.0;
+    var bgLapVar = 0.0;
 
     if (faceLapCount > 0) {
       final faceMean = faceLapSum / faceLapCount;
-      double faceVarAccum = 0.0;
-      for (int y = math.max(1, centerStartY); y < math.min(height - 1, centerEndY); y++) {
+      var faceVarAccum = 0.0;
+      for (var y = math.max(1, centerStartY);
+          y < math.min(height - 1, centerEndY);
+          y++) {
         final yOffset = y * width;
-        for (int x = math.max(1, centerStartX); x < math.min(width - 1, centerEndX); x++) {
+        for (var x = math.max(1, centerStartX);
+            x < math.min(width - 1, centerEndX);
+            x++) {
           final c = grayBytes[yOffset + x];
           final l = grayBytes[yOffset + x - 1];
           final r = grayBytes[yOffset + x + 1];
@@ -281,10 +282,10 @@ class HighResScreenAnalyzer {
 
     if (bgLapCount > 0) {
       final bgMean = bgLapSum / bgLapCount;
-      double bgVarAccum = 0.0;
-      for (int y = 1; y < height - 1; y++) {
+      var bgVarAccum = 0.0;
+      for (var y = 1; y < height - 1; y++) {
         final yOffset = y * width;
-        for (int x = 1; x < width - 1; x++) {
+        for (var x = 1; x < width - 1; x++) {
           final isCenter = x >= centerStartX &&
               x < centerEndX &&
               y >= centerStartY &&
@@ -304,16 +305,18 @@ class HighResScreenAnalyzer {
     }
 
     // Compute relative delta between face and background Laplacian variances.
-    // Use the coefficient of variation (normalized difference) to be scale-invariant.
+    // Use coefficient of variation (normalized difference) to be
+    // scale-invariant.
     final avgLapVar = (faceLapVar + bgLapVar) / 2.0;
     final lapDelta = (faceLapVar - bgLapVar).abs();
     final normalizedDelta = avgLapVar > 0.0 ? lapDelta / avgLapVar : 0.0;
 
-    // 2D flat planes (screens, prints) have extremely low normalizedDelta (< 0.08)
-    // combined with uniform patch dispersal (< 0.30) or high laplacian variance (> 2500).
+    // 2D flat planes (screens, prints) have extremely low normalizedDelta
+    // (< 0.08) combined with uniform patch dispersal (< 0.30) or high laplacian
+    // variance (> 2500).
     final is2DFlatSpoof =
         (normalizedDelta < 0.08 && patchDispersal < 0.30 && varLap > 500.0) ||
-        (normalizedDelta < 0.04 && varLap > 2000.0);
+            (normalizedDelta < 0.04 && varLap > 2000.0);
 
     return HighResScreenAnalysisResult(
       laplacianVariance: varLap,

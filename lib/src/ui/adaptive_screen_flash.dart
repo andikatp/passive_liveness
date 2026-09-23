@@ -1,8 +1,15 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
-/// Controller for orchestrating momentary high-brightness screen flashes for active photometric stereo assist.
+/// Controller for orchestrating momentary high-brightness screen flashes
+/// for active photometric stereo assist.
 class LivenessFlashController extends ChangeNotifier {
+  /// Creates a [LivenessFlashController].
+  LivenessFlashController({
+    this.flashColor = const Color(0xFFFFFFFF),
+    this.flashDuration = const Duration(milliseconds: 150),
+  });
   bool _isFlashing = false;
 
   /// The active screen flash background overlay color.
@@ -10,12 +17,6 @@ class LivenessFlashController extends ChangeNotifier {
 
   /// Duration of the screen flash burst.
   Duration flashDuration;
-
-  /// Creates a [LivenessFlashController].
-  LivenessFlashController({
-    this.flashColor = const Color(0xFFFFFFFF),
-    this.flashDuration = const Duration(milliseconds: 150),
-  });
 
   /// Whether the screen flash overlay is currently active.
   bool get isFlashing => _isFlashing;
@@ -33,26 +34,27 @@ class LivenessFlashController extends ChangeNotifier {
     _isFlashing = true;
     notifyListeners();
 
-    await Future.delayed(flashDuration);
+    await Future<void>.delayed(flashDuration);
 
     _isFlashing = false;
     notifyListeners();
   }
 }
 
-/// Overlay widget that renders a full-screen solid flash overlay when triggered by [controller].
+/// Overlay widget that renders a full-screen solid flash overlay when
+/// triggered by [controller].
 class AdaptiveScreenFlashOverlay extends StatelessWidget {
+  const AdaptiveScreenFlashOverlay({
+    required this.controller,
+    required this.child,
+    super.key,
+  });
+
   /// Controller driving screen flash state.
   final LivenessFlashController controller;
 
   /// Child widget (typically camera stream preview).
   final Widget child;
-
-  const AdaptiveScreenFlashOverlay({
-    super.key,
-    required this.controller,
-    required this.child,
-  });
 
   @override
   Widget build(BuildContext context) {

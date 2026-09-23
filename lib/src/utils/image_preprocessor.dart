@@ -3,9 +3,9 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import '../models/face_bounding_box.dart';
-import '../models/liveness_image_buffer.dart';
-import 'liveness_logger.dart';
+import 'package:passive_liveness/src/models/face_bounding_box.dart';
+import 'package:passive_liveness/src/models/liveness_image_buffer.dart';
+import 'package:passive_liveness/src/utils/liveness_logger.dart';
 
 /// Normalization schemes supported for input tensor preparation.
 enum NormalizationScheme {
@@ -27,10 +27,12 @@ class ImagePreprocessor {
   /// Default input size expected by MiniFAS model (128x128).
   static const int defaultModelSize = 128;
 
-  /// Default bounding box expansion factor recommended by MiniFAS (1.5x for this custom model).
+  /// Default bounding box expansion factor recommended by MiniFAS
+  /// (1.5x for this custom model).
   static const double defaultExpansionFactor = 1.5;
 
-  /// Normalizes raw 0..255 pixel intensity according to specified [NormalizationScheme].
+  /// Normalizes raw 0..255 pixel intensity according to specified
+  /// [NormalizationScheme].
   static double normalizePixel(
     double val, {
     required int colorChannel, // 0: Red, 1: Green, 2: Blue
@@ -49,13 +51,14 @@ class ImagePreprocessor {
     }
   }
 
-  /// Reflect101 coordinate mapping (`g fedcba|abcdefgh|gfedcba`) for smooth border padding.
+  /// Reflect101 coordinate mapping (`g fedcba|abcdefgh|gfedcba`) for smooth
+  /// border padding.
   ///
-  /// Mirrors coordinates past image boundaries `[0, maxVal]` to avoid artificial solid
-  /// constant-color edge bands.
+  /// Mirrors coordinates past image boundaries `[0, maxVal]` to avoid
+  /// artificial solid constant-color edge bands.
   static int _reflect101(int p, int maxVal) {
     if (maxVal <= 0) return 0;
-    int val = p;
+    var val = p;
     while (val < 0 || val > maxVal) {
       if (val < 0) {
         val = -val;
@@ -72,8 +75,9 @@ class ImagePreprocessor {
   /// Out-of-boundary pixels use **Reflect101 Border Padding** (`_reflect101`)
   /// to avoid artificial black border artifacts.
   ///
-  /// If [useNchw] is `true` (default), the tensor is structured in NCHW format
-  /// `[1, 3, targetSize, targetSize]`. Otherwise, NHWC format `[1, targetSize, targetSize, 3]` is used.
+  /// If [useNchw] is `true` (default), the tensor is structured in NCHW
+  /// format `[1, 3, targetSize, targetSize]`. Otherwise, NHWC format
+  /// `[1, targetSize, targetSize, 3]` is used.
   static Float32List preprocessBufferToTensor(
     LivenessImageBuffer buffer, {
     FaceBoundingBox? boundingBox,
@@ -90,8 +94,7 @@ class ImagePreprocessor {
     final rawH = buffer.height;
     final normRotation = ((rotation % 360) + 360) % 360;
 
-    final faceBbox =
-        boundingBox ??
+    final faceBbox = boundingBox ??
         FaceBoundingBox(
           x: 0,
           y: 0,
@@ -100,8 +103,7 @@ class ImagePreprocessor {
         );
 
     // Auto-detect if bounding box is in rotated frame space [0..rotW, 0..rotH]
-    final bool isRotated =
-        isRotatedBoundingBox ??
+    final isRotated = isRotatedBoundingBox ??
         (Platform.isAndroid && (normRotation == 90 || normRotation == 270)) ||
             ((normRotation == 90 || normRotation == 270) &&
                 (faceBbox.centerY > rawH || faceBbox.centerX > rawW));
@@ -110,21 +112,19 @@ class ImagePreprocessor {
         ? faceBbox.toRawBufferSpace(rawW, rawH, normRotation)
         : faceBbox;
 
-    // Strictly 1:1 square crop calculation (baseSide = max(w, h)) preserving trained 37.0% facial scale:
-    final boxW = math.max(1.0, effectiveBbox.width);
-    final boxH = math.max(1.0, effectiveBbox.height);
+    // Strictly 1:1 square crop calculation (baseSide = max(w, h)) preserving
+    // trained 37.0% facial scale:
+    final boxW = math.max(1, effectiveBbox.width);
+    final boxH = math.max(1, effectiveBbox.height);
     final baseSide = math.max(boxW, boxH);
-    final double cropSize = (baseSide * expansionFactor).toInt().toDouble();
+    final cropSize = (baseSide * expansionFactor).toInt().toDouble();
 
-    final double newW = cropSize;
-    final double newH = cropSize;
+    final newW = cropSize;
+    final newH = cropSize;
 
-    final double cropLeft = (effectiveBbox.centerX - cropSize / 2.0)
-        .toInt()
-        .toDouble();
-    final double cropTop = (effectiveBbox.centerY - cropSize / 2.0)
-        .toInt()
-        .toDouble();
+    final cropLeft =
+        (effectiveBbox.centerX - cropSize / 2.0).toInt().toDouble();
+    final cropTop = (effectiveBbox.centerY - cropSize / 2.0).toInt().toDouble();
 
     LivenessLogger.logCropStats(
       rawWidth: rawW,
@@ -144,95 +144,95 @@ class ImagePreprocessor {
     final isBgra = buffer.format == LivenessImageFormat.bgra8888;
     final isRgba = buffer.format == LivenessImageFormat.rgba8888;
 
-    final Uint8List plane0 = buffer.planes[0].bytes;
-    final int p0Stride = buffer.planes[0].bytesPerRow;
+    final plane0 = buffer.planes[0].bytes;
+    final p0Stride = buffer.planes[0].bytesPerRow;
 
-    final Uint8List? plane1 = buffer.planes.length > 1
-        ? buffer.planes[1].bytes
-        : null;
-    final Uint8List? plane2 = buffer.planes.length > 2
-        ? buffer.planes[2].bytes
-        : null;
+    final plane1 = buffer.planes.length > 1 ? buffer.planes[1].bytes : null;
+    final plane2 = buffer.planes.length > 2 ? buffer.planes[2].bytes : null;
 
-    final int uvStride = plane1 != null ? buffer.planes[1].bytesPerRow : 0;
-    final int uvPixelStride = plane1 != null
-        ? (buffer.planes[1].bytesPerPixel ?? 1)
-        : 1;
+    final uvStride = plane1 != null ? buffer.planes[1].bytesPerRow : 0;
+    final uvPixelStride =
+        plane1 != null ? (buffer.planes[1].bytesPerPixel ?? 1) : 1;
 
-    final double step = cropSize / targetSize;
+    final step = cropSize / targetSize;
 
-    for (int y = 0; y < targetSize; y++) {
-      final double cy1 = y * step;
-      final double cy2 = (y + 1) * step;
+    for (var y = 0; y < targetSize; y++) {
+      final cy1 = y * step;
+      final cy2 = (y + 1) * step;
 
-      for (int x = 0; x < targetSize; x++) {
-        final double cx1 = x * step;
-        final double cx2 = (x + 1) * step;
+      for (var x = 0; x < targetSize; x++) {
+        final cx1 = x * step;
+        final cx2 = (x + 1) * step;
 
-        double rawX1, rawX2, rawY1, rawY2;
+        double rawX1;
+        double rawX2;
+        double rawY1;
+        double rawY2;
         switch (normRotation) {
           case 90:
             rawX1 = cropLeft + cy1;
             rawX2 = cropLeft + cy2;
             rawY1 = cropTop + newH - cx2;
             rawY2 = cropTop + newH - cx1;
-            break;
           case 180:
             rawX1 = cropLeft + newW - cx2;
             rawX2 = cropLeft + newW - cx1;
             rawY1 = cropTop + newH - cy2;
             rawY2 = cropTop + newH - cy1;
-            break;
           case 270:
             rawX1 = cropLeft + newW - cy2;
             rawX2 = cropLeft + newW - cy1;
             rawY1 = cropTop + cx1;
             rawY2 = cropTop + cx2;
-            break;
           case 0:
           default:
             rawX1 = cropLeft + cx1;
             rawX2 = cropLeft + cx2;
             rawY1 = cropTop + cy1;
             rawY2 = cropTop + cy2;
-            break;
         }
 
-        double sumR = 0.0, sumG = 0.0, sumB = 0.0;
-        double sumY = 0.0, sumU = 0.0, sumV = 0.0;
-        double totalWeight = 0.0;
+        var sumR = 0.0;
+        var sumG = 0.0;
+        var sumB = 0.0;
+        var sumY = 0.0;
+        var sumU = 0.0;
+        var sumV = 0.0;
+        var totalWeight = 0.0;
 
-        final int startY = rawY1.floor();
-        final int endY = rawY2.ceil();
-        final int startX = rawX1.floor();
-        final int endX = rawX2.ceil();
+        final startY = rawY1.floor();
+        final endY = rawY2.ceil();
+        final startX = rawX1.floor();
+        final endX = rawX2.ceil();
 
-        for (int ry = startY; ry < endY; ry++) {
-          final double ryD = ry.toDouble();
-          final double ryp1 = ryD + 1.0;
-          final double yMin = ryp1 < rawY2 ? ryp1 : rawY2;
-          final double yMax = ryD > rawY1 ? ryD : rawY1;
-          final double yOverlap = yMin - yMax;
+        for (var ry = startY; ry < endY; ry++) {
+          final ryD = ry.toDouble();
+          final ryp1 = ryD + 1.0;
+          final yMin = ryp1 < rawY2 ? ryp1 : rawY2;
+          final yMax = ryD > rawY1 ? ryD : rawY1;
+          final yOverlap = yMin - yMax;
           if (yOverlap <= 0) continue;
 
-          final int srcY = _reflect101(ry, rawH - 1);
-          final int yIdxBase = srcY * p0Stride;
-          final int uvRow = srcY >> 1;
-          final int uvBase = uvRow * uvStride;
+          final srcY = _reflect101(ry, rawH - 1);
+          final yIdxBase = srcY * p0Stride;
+          final uvRow = srcY >> 1;
+          final uvBase = uvRow * uvStride;
 
-          for (int rx = startX; rx < endX; rx++) {
-            final double rxD = rx.toDouble();
-            final double rxp1 = rxD + 1.0;
-            final double xMin = rxp1 < rawX2 ? rxp1 : rawX2;
-            final double xMax = rxD > rawX1 ? rxD : rawX1;
-            final double xOverlap = xMin - xMax;
-            final double w = xOverlap * yOverlap;
+          for (var rx = startX; rx < endX; rx++) {
+            final rxD = rx.toDouble();
+            final rxp1 = rxD + 1.0;
+            final xMin = rxp1 < rawX2 ? rxp1 : rawX2;
+            final xMax = rxD > rawX1 ? rxD : rawX1;
+            final xOverlap = xMin - xMax;
+            final w = xOverlap * yOverlap;
             if (w <= 0) continue;
 
-            final int srcX = _reflect101(rx, rawW - 1);
+            final srcX = _reflect101(rx, rawW - 1);
 
             if (isBgra || isRgba) {
-              int r = 0, g = 0, b = 0;
+              var r = 0;
+              var g = 0;
+              var b = 0;
               final offset = yIdxBase + (srcX << 2);
               if (offset + 2 < plane0.length) {
                 b = isBgra ? plane0[offset] : plane0[offset + 2];
@@ -247,8 +247,8 @@ class ImagePreprocessor {
               final yIdx = yIdxBase + srcX;
               final yVal = yIdx < plane0.length ? plane0[yIdx] : 0;
 
-              int uVal = 128;
-              int vVal = 128;
+              var uVal = 128;
+              var vVal = 128;
 
               if (plane1 != null && plane2 != null) {
                 final uvCol = srcX >> 1;
@@ -295,8 +295,7 @@ class ImagePreprocessor {
                 }
               } else if (plane0.length >= rawW * rawH * 3 ~/ 2) {
                 // Single plane packed NV21 / NV12 in plane0
-                final uvOff =
-                    p0Stride * rawH +
+                final uvOff = p0Stride * rawH +
                     (srcY >> 1) * p0Stride +
                     ((srcX >> 1) << 1);
                 if (uvOff + 1 < plane0.length) {
@@ -329,11 +328,11 @@ class ImagePreprocessor {
             sumV /= totalWeight;
 
             // BT.601 YUV→RGB conversion
-            final double u = sumU - 128.0;
-            final double v = sumV - 128.0;
-            final double r = sumY + 1.402 * v;
-            final double g = sumY - 0.344136 * u - 0.714136 * v;
-            final double b = sumY + 1.772 * u;
+            final u = sumU - 128.0;
+            final v = sumV - 128.0;
+            final r = sumY + 1.402 * v;
+            final g = sumY - 0.344136 * u - 0.714136 * v;
+            final b = sumY + 1.772 * u;
 
             sumR = r.clamp(0.0, 255.0);
             sumG = g.clamp(0.0, 255.0);
@@ -393,7 +392,8 @@ class ImagePreprocessor {
   /// Preprocesses a raw RGBA 32-bit pixel byte buffer into a Float32 tensor.
   ///
   /// Stores normalized RGB pixel values in `[0.0, 1.0]` range.
-  /// Out-of-boundary pixels use **Edge Pixel Replication** (`BORDER_REPLICATE` coordinate clamping).
+  /// Out-of-boundary pixels use **Edge Pixel Replication**
+  /// (`BORDER_REPLICATE` coordinate clamping).
   static Float32List preprocessRgbaBytesToTensor(
     Uint8List rgbaBytes,
     int rawW,
@@ -406,8 +406,7 @@ class ImagePreprocessor {
     NormalizationScheme normalizationScheme = NormalizationScheme.zeroToOne,
     bool enableContrastStretch = false,
   }) {
-    final faceBbox =
-        boundingBox ??
+    final faceBbox = boundingBox ??
         FaceBoundingBox(
           x: 0,
           y: 0,
@@ -415,21 +414,18 @@ class ImagePreprocessor {
           height: rawH.toDouble(),
         );
 
-    // Strictly 1:1 square crop calculation (baseSide = max(w, h)) preserving trained 37.0% facial scale:
-    final boxW = math.max(1.0, faceBbox.width);
-    final boxH = math.max(1.0, faceBbox.height);
+    // Strictly 1:1 square crop calculation (baseSide = max(w, h)) preserving
+    // trained 37.0% facial scale:
+    final boxW = math.max(1, faceBbox.width);
+    final boxH = math.max(1, faceBbox.height);
     final baseSide = math.max(boxW, boxH);
-    final double cropSize = (baseSide * expansionFactor).toInt().toDouble();
+    final cropSize = (baseSide * expansionFactor).toInt().toDouble();
 
-    final double newW = cropSize;
-    final double newH = cropSize;
+    final newW = cropSize;
+    final newH = cropSize;
 
-    final double cropLeft = (faceBbox.centerX - cropSize / 2.0)
-        .toInt()
-        .toDouble();
-    final double cropTop = (faceBbox.centerY - cropSize / 2.0)
-        .toInt()
-        .toDouble();
+    final cropLeft = (faceBbox.centerX - cropSize / 2.0).toInt().toDouble();
+    final cropTop = (faceBbox.centerY - cropSize / 2.0).toInt().toDouble();
 
     LivenessLogger.logCropStats(
       rawWidth: rawW,
@@ -446,43 +442,45 @@ class ImagePreprocessor {
     final tensor = Float32List(1 * targetSize * targetSize * 3);
     final hw = targetSize * targetSize;
 
-    final double step = cropSize / targetSize;
+    final step = cropSize / targetSize;
 
-    for (int y = 0; y < targetSize; y++) {
-      final double cy1 = y * step;
-      final double cy2 = (y + 1) * step;
+    for (var y = 0; y < targetSize; y++) {
+      final cy1 = y * step;
+      final cy2 = (y + 1) * step;
 
-      for (int x = 0; x < targetSize; x++) {
-        final double cx1 = x * step;
-        final double cx2 = (x + 1) * step;
+      for (var x = 0; x < targetSize; x++) {
+        final cx1 = x * step;
+        final cx2 = (x + 1) * step;
 
-        final double rawX1 = cropLeft + cx1;
-        final double rawX2 = cropLeft + cx2;
-        final double rawY1 = cropTop + cy1;
-        final double rawY2 = cropTop + cy2;
+        final rawX1 = cropLeft + cx1;
+        final rawX2 = cropLeft + cx2;
+        final rawY1 = cropTop + cy1;
+        final rawY2 = cropTop + cy2;
 
-        double sumR = 0.0, sumG = 0.0, sumB = 0.0;
-        double totalWeight = 0.0;
+        var sumR = 0.0;
+        var sumG = 0.0;
+        var sumB = 0.0;
+        var totalWeight = 0.0;
 
-        final int startY = rawY1.floor();
-        final int endY = rawY2.ceil();
-        final int startX = rawX1.floor();
-        final int endX = rawX2.ceil();
+        final startY = rawY1.floor();
+        final endY = rawY2.ceil();
+        final startX = rawX1.floor();
+        final endX = rawX2.ceil();
 
-        for (int ry = startY; ry < endY; ry++) {
-          final double yOverlap =
+        for (var ry = startY; ry < endY; ry++) {
+          final yOverlap =
               math.min(ry + 1.0, rawY2) - math.max(ry.toDouble(), rawY1);
           if (yOverlap <= 0) continue;
-          final int srcY = _reflect101(ry, rawH - 1);
-          final int yBaseOffset = srcY * rawW;
+          final srcY = _reflect101(ry, rawH - 1);
+          final yBaseOffset = srcY * rawW;
 
-          for (int rx = startX; rx < endX; rx++) {
-            final double xOverlap =
+          for (var rx = startX; rx < endX; rx++) {
+            final xOverlap =
                 math.min(rx + 1.0, rawX2) - math.max(rx.toDouble(), rawX1);
-            final double w = xOverlap * yOverlap;
+            final w = xOverlap * yOverlap;
             if (w <= 0) continue;
 
-            final int srcX = _reflect101(rx, rawW - 1);
+            final srcX = _reflect101(rx, rawW - 1);
 
             final offset = (yBaseOffset + srcX) << 2;
             if (offset + 2 < rgbaBytes.length) {
@@ -548,7 +546,8 @@ class ImagePreprocessor {
     return tensor;
   }
 
-  /// Luma-Preserving Contrast Stretch to prevent RGB sensor noise amplification.
+  /// Luma-Preserving Contrast Stretch to prevent RGB sensor noise
+  /// amplification.
   static void _applyAdaptiveContrastStretch(
     Float32List tensor, {
     required int targetSize,
@@ -560,13 +559,15 @@ class ImagePreprocessor {
     final hw = targetSize * targetSize;
     if (hw == 0) return;
 
-    double minY = 1.0;
-    double maxY = 0.0;
-    double sumY = 0.0;
+    var minY = 1.0;
+    var maxY = 0.0;
+    var sumY = 0.0;
 
-    // 1. Calculate relative luma Y = 0.299*R + 0.587*G + 0.114*B and find min/max Y
-    for (int i = 0; i < hw; i++) {
-      double r, g, b;
+    // 1. Calculate relative luma Y = 0.299*R + 0.587*G + 0.114*B and find min/max
+    for (var i = 0; i < hw; i++) {
+      double r;
+      double g;
+      double b;
       if (useNchw) {
         r = tensor[i];
         g = tensor[hw + i];
@@ -586,13 +587,15 @@ class ImagePreprocessor {
 
     final meanY = sumY / hw;
 
-    // 2. If crop is too dark (< 0.40 mean luma), apply gamma correction to lift shadows
+    // 2. If crop is too dark (< 0.40 mean luma), apply gamma correction
     if (meanY < 0.40 && meanY > 0.01) {
       // Calculate gamma to lift the mean luma to roughly 0.5
       final gamma = math.log(0.5) / math.log(meanY);
 
-      for (int i = 0; i < hw; i++) {
-        double r, g, b;
+      for (var i = 0; i < hw; i++) {
+        double r;
+        double g;
+        double b;
         if (useNchw) {
           r = tensor[i];
           g = tensor[hw + i];
@@ -629,7 +632,7 @@ class ImagePreprocessor {
     }
   }
 
-  /// Saves a Float32List tensor (128x128) as a PNG/PPM image file on disk for visual debugging.
+  /// Saves a Float32List tensor (128x128) as a PNG/PPM image file on disk.
   ///
   /// Supports NCHW (`isNchw: true`) and NHWC (`isNchw: false`) layouts.
   /// Default save path: `/tmp/liveness_tensor_debug.png`.
@@ -646,12 +649,14 @@ class ImagePreprocessor {
     final hw = targetSize * targetSize;
     final rgbaBytes = Uint8List(hw * 4);
 
-    for (int y = 0; y < targetSize; y++) {
-      for (int x = 0; x < targetSize; x++) {
+    for (var y = 0; y < targetSize; y++) {
+      for (var x = 0; x < targetSize; x++) {
         final spatialIdx = y * targetSize + x;
         final outIdx = spatialIdx * 4;
 
-        double rVal, gVal, bVal;
+        double rVal;
+        double gVal;
+        double bVal;
 
         if (isNchw) {
           rVal = tensor[spatialIdx];
@@ -679,14 +684,14 @@ class ImagePreprocessor {
     if (path.endsWith('.ppm')) {
       final header = 'P6\n$targetSize $targetSize\n255\n';
       final rgbBytes = Uint8List(hw * 3);
-      for (int i = 0; i < hw; i++) {
+      for (var i = 0; i < hw; i++) {
         rgbBytes[i * 3] = rgbaBytes[i * 4];
         rgbBytes[i * 3 + 1] = rgbaBytes[i * 4 + 1];
         rgbBytes[i * 3 + 2] = rgbaBytes[i * 4 + 2];
       }
-      final builder = BytesBuilder();
-      builder.add(header.codeUnits);
-      builder.add(rgbBytes);
+      final builder = BytesBuilder()
+        ..add(header.codeUnits)
+        ..add(rgbBytes);
       await file.writeAsBytes(builder.toBytes());
     } else {
       final descriptor = ui.ImageDescriptor.raw(
@@ -711,8 +716,8 @@ class ImagePreprocessor {
     return file;
   }
 
-  /// Extracts an un-downscaled grayscale crop (default target size 256x256) of the center face region
-  /// for high-frequency micro-texture analysis (LBP / HOG).
+  /// Extracts an un-downscaled grayscale crop (default target size 256x256)
+  /// of the center face region for high-frequency micro-texture analysis.
   static Uint8List extractHighResCrop(
     LivenessImageBuffer buffer, {
     FaceBoundingBox? boundingBox,
@@ -724,8 +729,7 @@ class ImagePreprocessor {
     final rawH = buffer.height;
     final normRotation = ((rotation % 360) + 360) % 360;
 
-    final faceBbox =
-        boundingBox ??
+    final faceBbox = boundingBox ??
         FaceBoundingBox(
           x: 0,
           y: 0,
@@ -733,8 +737,7 @@ class ImagePreprocessor {
           height: rawH.toDouble(),
         );
 
-    final bool isRotated =
-        isRotatedBoundingBox ??
+    final isRotated = isRotatedBoundingBox ??
         (Platform.isAndroid && (normRotation == 90 || normRotation == 270)) ||
             ((normRotation == 90 || normRotation == 270) &&
                 (faceBbox.centerY > rawH || faceBbox.centerX > rawW));
@@ -742,58 +745,51 @@ class ImagePreprocessor {
         ? faceBbox.toRawBufferSpace(rawW, rawH, normRotation)
         : faceBbox;
 
-    final boxW = math.max(1.0, effectiveBbox.width);
-    final boxH = math.max(1.0, effectiveBbox.height);
+    final boxW = math.max(1, effectiveBbox.width);
+    final boxH = math.max(1, effectiveBbox.height);
     final baseSide = math.max(boxW, boxH);
-    final double cropSize =
+    final cropSize =
         baseSide; // 1.0x tight center face crop for micro-texture analysis
 
-    final double cropLeft = (effectiveBbox.centerX - cropSize / 2.0)
-        .toInt()
-        .toDouble();
-    final double cropTop = (effectiveBbox.centerY - cropSize / 2.0)
-        .toInt()
-        .toDouble();
+    final cropLeft =
+        (effectiveBbox.centerX - cropSize / 2.0).toInt().toDouble();
+    final cropTop = (effectiveBbox.centerY - cropSize / 2.0).toInt().toDouble();
 
     final resultBytes = Uint8List(targetSize * targetSize);
     final isBgra = buffer.format == LivenessImageFormat.bgra8888;
     final isRgba = buffer.format == LivenessImageFormat.rgba8888;
-    final Uint8List plane0 = buffer.planes[0].bytes;
-    final int p0Stride = buffer.planes[0].bytesPerRow;
-    final double step = cropSize / targetSize;
+    final plane0 = buffer.planes[0].bytes;
+    final p0Stride = buffer.planes[0].bytesPerRow;
+    final step = cropSize / targetSize;
 
-    for (int y = 0; y < targetSize; y++) {
-      final double cy = cropTop + y * step;
-      for (int x = 0; x < targetSize; x++) {
-        final double cx = cropLeft + x * step;
+    for (var y = 0; y < targetSize; y++) {
+      final cy = cropTop + y * step;
+      for (var x = 0; x < targetSize; x++) {
+        final cx = cropLeft + x * step;
 
-        double rawX = cx;
-        double rawY = cy;
+        var rawX = cx;
+        var rawY = cy;
 
         switch (normRotation) {
           case 90:
             rawX = cropLeft + cy;
             rawY = cropTop + cropSize - cx;
-            break;
           case 180:
             rawX = cropLeft + cropSize - cx;
             rawY = cropTop + cropSize - cy;
-            break;
           case 270:
             rawX = cropLeft + cropSize - cy;
             rawY = cropTop + cx;
-            break;
           case 0:
           default:
             rawX = cx;
             rawY = cy;
-            break;
         }
 
-        final int srcX = _reflect101(rawX.round(), rawW - 1);
-        final int srcY = _reflect101(rawY.round(), rawH - 1);
+        final srcX = _reflect101(rawX.round(), rawW - 1);
+        final srcY = _reflect101(rawY.round(), rawH - 1);
 
-        int gray = 0;
+        var gray = 0;
         if (isBgra || isRgba) {
           final offset = srcY * p0Stride + (srcX << 2);
           if (offset + 2 < plane0.length) {

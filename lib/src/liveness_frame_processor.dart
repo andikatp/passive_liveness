@@ -1,14 +1,22 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import 'models/face_bounding_box.dart';
-import 'models/liveness_image_buffer.dart';
-import 'models/liveness_result.dart';
-import 'passive_liveness_detector.dart';
-import 'utils/liveness_logger.dart';
+import 'package:passive_liveness/src/models/face_bounding_box.dart';
+import 'package:passive_liveness/src/models/liveness_image_buffer.dart';
+import 'package:passive_liveness/src/models/liveness_result.dart';
+import 'package:passive_liveness/src/passive_liveness_detector.dart';
+import 'package:passive_liveness/src/utils/liveness_logger.dart';
 
-/// Helper to handle live camera frame streaming without UI lag or frame dropping.
+/// Helper to handle live camera frame streaming without UI lag
+/// or frame dropping.
 class LivenessFrameProcessor {
+  /// Creates a [LivenessFrameProcessor] with the given [detector]
+  /// and [throttleInterval].
+  LivenessFrameProcessor({
+    required this.detector,
+    this.throttleInterval = const Duration(milliseconds: 150),
+  });
+
   /// The passive liveness detector engine instance.
   final PassiveLivenessDetector detector;
 
@@ -21,19 +29,15 @@ class LivenessFrameProcessor {
   /// Previous frame bounding box for motion stability check.
   ui.Rect? _lastFaceBox;
 
-  /// Cached previous inference result returned when frame is unstable due to motion.
+  /// Cached previous inference result returned when frame is unstable due to
+  /// motion.
   LivenessResult? _lastResult;
-
-  /// Creates a [LivenessFrameProcessor] with the given [detector] and [throttleInterval].
-  LivenessFrameProcessor({
-    required this.detector,
-    this.throttleInterval = const Duration(milliseconds: 150),
-  });
 
   /// Whether a frame is currently being processed.
   bool get isProcessing => _isProcessing;
 
-  /// Checks whether the face bounding box is stable relative to the previous frame.
+  /// Checks whether the face bounding box is stable relative to the previous
+  /// frame.
   ///
   /// Returns `false` if motion deltas exceed 5% (0.05), indicating motion blur
   /// or camera AE/AF adjustment.
@@ -72,7 +76,8 @@ class LivenessFrameProcessor {
     return isStable;
   }
 
-  /// Processes a single camera frame directly from a Flutter `CameraImage` instance.
+  /// Processes a single camera frame directly from a Flutter `CameraImage`
+  /// instance.
   Future<LivenessResult?> processCameraFrame(
     dynamic cameraImage, {
     FaceBoundingBox? boundingBox,
@@ -96,7 +101,8 @@ class LivenessFrameProcessor {
 
   /// Processes a single frame from a raw camera [LivenessImageBuffer].
   ///
-  /// Throttles frame evaluation frequency according to [throttleInterval] to prevent UI lag,
+  /// Throttles frame evaluation frequency according to [throttleInterval]
+  /// to prevent UI lag,
   /// and automatically bypasses inference during user motion blur.
   ///
   /// Returns `null` if the processor is busy or within the throttle interval.

@@ -1,3 +1,4 @@
+// Diagnostic test for liveness fixtures.
 // ignore_for_file: avoid_print
 
 import 'dart:io';
@@ -12,34 +13,34 @@ void main() {
   late PassiveLivenessDetector detector;
   final fixturesDir = Directory('test/fixtures');
 
-  List<double> mockLogits = [3.5, 0.5];
+  var mockLogits = <double>[3.5, 0.5];
 
   setUpAll(() async {
     const channel = MethodChannel('com.andikatp.passiveLiveness');
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-          if (methodCall.method == 'initModel') {
-            return {
-              'inputShape': [1, 3, 128, 128],
-              'isNchw': true,
-              'targetSize': 128,
-            };
-          }
-          if (methodCall.method == 'runInference') {
-            return mockLogits;
-          }
-          if (methodCall.method == 'closeModel') {
-            return null;
-          }
-          return null;
-        });
+        .setMockMethodCallHandler(channel, (methodCall) async {
+      if (methodCall.method == 'initModel') {
+        return {
+          'inputShape': [1, 3, 128, 128],
+          'isNchw': true,
+          'targetSize': 128,
+        };
+      }
+      if (methodCall.method == 'runInference') {
+        return mockLogits;
+      }
+      if (methodCall.method == 'closeModel') {
+        return null;
+      }
+      return null;
+    });
 
     detector = PassiveLivenessDetector();
     await detector.initialize();
   });
 
-  tearDownAll(() {
-    detector.dispose();
+  tearDownAll(() async {
+    await detector.dispose();
   });
 
   test('Diagnose all fixture images in test/fixtures', () async {
@@ -54,13 +55,10 @@ void main() {
     print('DIAGNOSING FIXTURE IMAGES (${files.length} files found)');
     print('======================================================\n');
 
-    final summaryLines = <String>[];
-    summaryLines.add(
-      'FILENAME            | EXPECTED | IS_REAL | STATUS            | CHROM_VAR | LBP_RATIO | HOG_DOM | FLAT_2D | EMISS_SAT | MOIRE',
-    );
-    summaryLines.add(
-      '--------------------+----------+---------+-------------------+-----------+-----------+---------+---------+-----------+-------',
-    );
+    final summaryLines = <String>[
+      'FILENAME | EXPECTED | IS_REAL | STATUS | CHROM_VAR | LBP_RATIO',
+      '------------------------------------------------------------',
+    ];
 
     for (final file in files) {
       final lowerPath = file.path.toLowerCase();
@@ -99,7 +97,9 @@ void main() {
       final moireHf = result.moireHighFreqRatio?.toStringAsFixed(3) ?? 'N/A';
 
       summaryLines.add(
-        '${fileName.padRight(19)} | ${expected.padRight(8)} | ${isRealStr.padRight(7)} | ${result.status.name.padRight(17)} | ${chromVar.padRight(9)} | ${lbp.padRight(9)} | ${hog.padRight(7)} | ${lapDelta.padRight(7)} | ${satVar.padRight(9)} | $moireHf',
+        '${fileName.padRight(15)} | $expected | $isRealStr | '
+        '${result.status.name} | $chromVar | $lbp | $hog | '
+        '$lapDelta | $satVar | $moireHf',
       );
 
       // Assert expected liveness result per fixture type

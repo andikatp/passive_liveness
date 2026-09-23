@@ -6,12 +6,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('FaceProximityGate tests', () {
-    const gate = FaceProximityGate(
-      minFaceAreaRatio: 0.05,
-      maxFaceAreaRatio: 0.85,
-      minAspectRatio: 0.50,
-      maxAspectRatio: 1.25,
-    );
+    const gate = FaceProximityGate();
 
     test(
       'Rejects face bounding box when face is too far (area ratio < 5%)',
@@ -47,7 +42,7 @@ void main() {
     );
 
     test('Rejects face bounding box with unnatural aspect ratio', () {
-      // 1000x1000 frame. Face 600x200 = area ratio 12%, aspect ratio 3.0 (> 1.25)
+      // 1000x1000 frame. Face 600x200 = area ratio 12%, aspect ratio 3.0
       const bbox = FaceBoundingBox(x: 200, y: 300, width: 600, height: 200);
       final result = gate.evaluate(
         boundingBox: bbox,
@@ -60,7 +55,7 @@ void main() {
     });
 
     test(
-      'Accepts valid face bounding box within standard proximity and aspect bounds',
+      'Accepts valid face bounding box within standard proximity and bounds',
       () {
         // 1000x1000 frame. Face 400x500 = area ratio 20%, aspect ratio 0.8
         const bbox = FaceBoundingBox(x: 300, y: 250, width: 400, height: 500);
@@ -79,16 +74,13 @@ void main() {
   });
 
   group('LbpHogAnalyzer micro-texture tests', () {
-    const analyzer = LbpHogAnalyzer(
-      lbpPrintThreshold: 0.38,
-      hogScreenThreshold: 0.42,
-    );
+    const analyzer = LbpHogAnalyzer();
 
     test('Analyzes smooth grayscale crop with low non-uniform LBP ratio', () {
       // 32x32 uniform smooth gradient
       final bytes = Uint8List(32 * 32);
-      for (int y = 0; y < 32; y++) {
-        for (int x = 0; x < 32; x++) {
+      for (var y = 0; y < 32; y++) {
+        for (var x = 0; x < 32; x++) {
           bytes[y * 32 + x] = ((x + y) * 2).clamp(0, 255);
         }
       }
@@ -99,13 +91,13 @@ void main() {
     });
 
     test(
-      'Detects directional screen grid alignment via HOG orientation peak dominance',
+      'Detects directional screen grid alignment via HOG orientation',
       () {
-        // 32x32 image with vertical stripe pattern (simulating LCD sub-pixel screen grid)
+        // 32x32 image with vertical stripe pattern (simulating LCD sub-pixel)
         final bytes = Uint8List(32 * 32);
-        for (int y = 0; y < 32; y++) {
-          for (int x = 0; x < 32; x++) {
-            bytes[y * 32 + x] = ((x ~/ 4) % 2 == 0) ? 255 : 0;
+        for (var y = 0; y < 32; y++) {
+          for (var x = 0; x < 32; x++) {
+            bytes[y * 32 + x] = (x ~/ 4).isEven ? 255 : 0;
           }
         }
 
@@ -117,13 +109,13 @@ void main() {
 
   group('ColorSpaceAnalyzer tests', () {
     const analyzer = ColorSpaceAnalyzer(
-      maxVarianceThreshold: 160.0,
+      maxVarianceThreshold: 160,
       minVarianceThreshold: 1.5,
     );
 
     test('Calculates chrominance variance for BGRA image buffer', () {
       final bytes = Uint8List(20 * 20 * 4);
-      for (int i = 0; i < bytes.length; i += 4) {
+      for (var i = 0; i < bytes.length; i += 4) {
         bytes[i] = 180; // B
         bytes[i + 1] = 120; // G
         bytes[i + 2] = 200; // R
@@ -146,14 +138,14 @@ void main() {
       final result = analyzer.analyzeBuffer(buffer);
       expect(result.meanCb, greaterThan(0.0));
       expect(result.meanCr, greaterThan(0.0));
-      // Flat solid color has 0 variance (< minVarianceThreshold 1.5) -> flagged as synthetic/monochrome spoof
+      // Flat solid color has 0 variance (< minVarianceThreshold 1.5)
       expect(result.chrominanceVariance, lessThan(1.5));
       expect(result.isScreenReplaySpoof, isTrue);
     });
 
     test('Reads RGBA image buffers without swapping red and blue channels', () {
       final bytes = Uint8List(20 * 20 * 4);
-      for (int i = 0; i < bytes.length; i += 4) {
+      for (var i = 0; i < bytes.length; i += 4) {
         bytes[i] = 200; // R
         bytes[i + 1] = 120; // G
         bytes[i + 2] = 180; // B
@@ -182,7 +174,7 @@ void main() {
 
   group('HighResScreenAnalyzer tests', () {
     const analyzer = HighResScreenAnalyzer(
-      minPatchDispersalThreshold: 4.0,
+      minPatchDispersalThreshold: 4,
       maxSpecularRatioThreshold: 0.08,
     );
 
@@ -191,9 +183,9 @@ void main() {
       () {
         // 64x64 flat texture (uniform high-frequency grid across all patches)
         final bytes = Uint8List(64 * 64);
-        for (int y = 0; y < 64; y++) {
-          for (int x = 0; x < 64; x++) {
-            bytes[y * 64 + x] = ((x + y) % 2 == 0) ? 200 : 50;
+        for (var y = 0; y < 64; y++) {
+          for (var x = 0; x < 64; x++) {
+            bytes[y * 64 + x] = (x + y).isEven ? 200 : 50;
           }
         }
 
@@ -206,7 +198,7 @@ void main() {
     test('Detects excessive glass screen specular glare highlights', () {
       // 64x64 image with 20% pure white (255) specular glare hotspots
       final bytes = Uint8List(64 * 64);
-      for (int i = 0; i < bytes.length; i++) {
+      for (var i = 0; i < bytes.length; i++) {
         bytes[i] = (i < bytes.length * 0.20) ? 255 : 120;
       }
 
@@ -241,11 +233,11 @@ void main() {
         status: LivenessStatus.real,
         realScore: 0.9,
         spoofScore: 0.1,
-        realLogit: 2.0,
-        spoofLogit: -2.0,
-        logitDiff: 4.0,
-        confidence: 4.0,
-        threshold: 0.0,
+        realLogit: 2,
+        spoofLogit: -2,
+        logitDiff: 4,
+        confidence: 4,
+        threshold: 0,
         inferenceTime: Duration.zero,
         meanLuminance: 28.5,
         isLowLight: true,

@@ -1,3 +1,7 @@
+// Duck-typing is used for cameraImage parameter to support flexible
+// camera objects.
+// ignore_for_file: avoid_dynamic_calls
+
 import 'dart:typed_data';
 
 /// Image format group supported for passive liveness detection.
@@ -17,6 +21,14 @@ enum LivenessImageFormat {
 
 /// Represents a single plane in a raw camera frame buffer.
 class LivenessImagePlane {
+  /// Creates a [LivenessImagePlane] with [bytes], [bytesPerRow],
+  /// and optional [bytesPerPixel].
+  const LivenessImagePlane({
+    required this.bytes,
+    required this.bytesPerRow,
+    this.bytesPerPixel,
+  });
+
   /// Byte array for this plane.
   final Uint8List bytes;
 
@@ -25,32 +37,15 @@ class LivenessImagePlane {
 
   /// Number of bytes per pixel (pixel stride), if applicable.
   final int? bytesPerPixel;
-
-  /// Creates a [LivenessImagePlane] with [bytes], [bytesPerRow], and optional [bytesPerPixel].
-  const LivenessImagePlane({
-    required this.bytes,
-    required this.bytesPerRow,
-    this.bytesPerPixel,
-  });
 }
 
 /// Pure Dart lightweight model representing a raw camera image buffer.
 ///
-/// Designed to decouple `passive_liveness` from any specific Flutter camera package.
+/// Designed to decouple `passive_liveness` from
+/// any specific Flutter camera package.
 class LivenessImageBuffer {
-  /// Buffer width in pixels.
-  final int width;
-
-  /// Buffer height in pixels.
-  final int height;
-
-  /// Buffer color format (`yuv420`, `nv21`, `bgra8888`, `rgba8888`).
-  final LivenessImageFormat format;
-
-  /// List of image planes.
-  final List<LivenessImagePlane> planes;
-
-  /// Creates a [LivenessImageBuffer] with [width], [height], [format], and [planes].
+  /// Creates a [LivenessImageBuffer] with
+  /// [width], [height], [format], and [planes].
   const LivenessImageBuffer({
     required this.width,
     required this.height,
@@ -58,7 +53,8 @@ class LivenessImageBuffer {
     required this.planes,
   });
 
-  /// Creates a [LivenessImageBuffer] directly from a Flutter `CameraImage` instance.
+  /// Creates a [LivenessImageBuffer] directly from a Flutter
+  /// `CameraImage` instance.
   factory LivenessImageBuffer.fromCameraImage(dynamic cameraImage) {
     if (cameraImage is LivenessImageBuffer) return cameraImage;
 
@@ -89,4 +85,16 @@ class LivenessImageBuffer {
       planes: planes,
     );
   }
+
+  /// Buffer width in pixels.
+  final int width;
+
+  /// Buffer height in pixels.
+  final int height;
+
+  /// Buffer color format (`yuv420`, `nv21`, `bgra8888`, `rgba8888`).
+  final LivenessImageFormat format;
+
+  /// List of image planes.
+  final List<LivenessImagePlane> planes;
 }

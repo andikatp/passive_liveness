@@ -1,0 +1,207 @@
+Analyzing passive_liveness...                                   
+
+   info • The diagnostic 'avoid_dynamic_calls' isn't produced at this location so it doesn't need to be ignored. Try removing the ignore comment • lib/src/models/liveness_image_buffer.dart:54:14 • unnecessary_ignore
+   info • Method invocation or property access on a 'dynamic' target. Try giving the target a type • lib/src/models/liveness_image_buffer.dart:58:25 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target. Try giving the target a type • lib/src/models/liveness_image_buffer.dart:58:25 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target. Try giving the target a type • lib/src/models/liveness_image_buffer.dart:62:17 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target. Try giving the target a type • lib/src/models/liveness_image_buffer.dart:68:21 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target. Try giving the target a type • lib/src/models/liveness_image_buffer.dart:71:20 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target. Try giving the target a type • lib/src/models/liveness_image_buffer.dart:72:26 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target. Try giving the target a type • lib/src/models/liveness_image_buffer.dart:73:28 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target. Try giving the target a type • lib/src/models/liveness_image_buffer.dart:79:14 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target. Try giving the target a type • lib/src/models/liveness_image_buffer.dart:80:15 • avoid_dynamic_calls
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/models/liveness_result.dart:170:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/models/liveness_result.dart:173:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/models/liveness_result.dart:179:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/models/liveness_result.dart:182:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/models/liveness_result.dart:185:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/models/liveness_result.dart:213:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/models/liveness_result.dart:245:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/models/liveness_result.dart:249:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:42:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:49:81 • lines_longer_than_80_chars
+   info • Catch clause should use 'on' to specify the type of exception being caught. Try adding an 'on' clause before the 'catch' • lib/src/passive_liveness_detector.dart:120:9 • avoid_catches_without_on_clauses
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:142:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:145:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:148:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:149:81 • lines_longer_than_80_chars
+   info • The referenced name isn't visible in scope. Try adding an import for the referenced name • lib/src/passive_liveness_detector.dart:150:70 • comment_references
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:150:81 • lines_longer_than_80_chars
+   info • The referenced name isn't visible in scope. Try adding an import for the referenced name • lib/src/passive_liveness_detector.dart:167:10 • comment_references
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:167:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:168:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:169:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:170:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:171:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:172:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:173:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:175:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:342:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:399:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:481:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:487:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:511:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:512:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:513:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:514:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:582:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:584:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:585:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:589:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:590:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:591:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:592:81 • lines_longer_than_80_chars
+   info • Returning a 'Future' without 'await'. Try adding an 'await' or making the body non-async • lib/src/passive_liveness_detector.dart:640:5 • async_return_with_no_await
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:654:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:656:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:660:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:661:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:662:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/passive_liveness_detector.dart:663:81 • lines_longer_than_80_chars
+   info • Returning a 'Future' without 'await'. Try adding an 'await' or making the body non-async • lib/src/passive_liveness_detector.dart:675:5 • async_return_with_no_await
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/color_space_analyzer.dart:27:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/color_space_analyzer.dart:48:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/color_space_analyzer.dart:77:81 • lines_longer_than_80_chars
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/color_space_analyzer.dart:94:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/color_space_analyzer.dart:94:20 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/color_space_analyzer.dart:95:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/color_space_analyzer.dart:95:20 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/color_space_analyzer.dart:96:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/color_space_analyzer.dart:96:21 • prefer_int_literals
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/color_space_analyzer.dart:99:81 • lines_longer_than_80_chars
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/color_space_analyzer.dart:243:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/color_space_analyzer.dart:243:20 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/color_space_analyzer.dart:244:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/color_space_analyzer.dart:244:20 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/color_space_analyzer.dart:245:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/color_space_analyzer.dart:245:21 • prefer_int_literals
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/face_proximity_gate.dart:29:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/face_proximity_gate.dart:62:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/high_res_screen_analyzer.dart:27:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/high_res_screen_analyzer.dart:45:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/high_res_screen_analyzer.dart:67:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/high_res_screen_analyzer.dart:82:81 • lines_longer_than_80_chars
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/high_res_screen_analyzer.dart:84:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/high_res_screen_analyzer.dart:84:21 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/high_res_screen_analyzer.dart:122:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/high_res_screen_analyzer.dart:122:21 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/high_res_screen_analyzer.dart:145:9 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/high_res_screen_analyzer.dart:145:23 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/high_res_screen_analyzer.dart:167:11 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/high_res_screen_analyzer.dart:167:25 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/high_res_screen_analyzer.dart:193:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/high_res_screen_analyzer.dart:193:29 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/high_res_screen_analyzer.dart:195:7 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/high_res_screen_analyzer.dart:195:24 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/high_res_screen_analyzer.dart:201:7 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/high_res_screen_analyzer.dart:201:24 • prefer_int_literals
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/high_res_screen_analyzer.dart:216:81 • lines_longer_than_80_chars
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/high_res_screen_analyzer.dart:223:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/high_res_screen_analyzer.dart:223:25 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/high_res_screen_analyzer.dart:225:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/high_res_screen_analyzer.dart:225:23 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/high_res_screen_analyzer.dart:252:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/high_res_screen_analyzer.dart:252:25 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/high_res_screen_analyzer.dart:253:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/high_res_screen_analyzer.dart:253:23 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/high_res_screen_analyzer.dart:257:7 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/high_res_screen_analyzer.dart:257:29 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/high_res_screen_analyzer.dart:280:7 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/high_res_screen_analyzer.dart:280:27 • prefer_int_literals
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/high_res_screen_analyzer.dart:303:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/high_res_screen_analyzer.dart:308:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/high_res_screen_analyzer.dart:309:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/image_preprocessor.dart:30:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/image_preprocessor.dart:33:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/image_preprocessor.dart:52:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/image_preprocessor.dart:54:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/image_preprocessor.dart:76:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/image_preprocessor.dart:111:81 • lines_longer_than_80_chars
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:190:9 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:190:23 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:191:9 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:191:23 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:192:9 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:192:23 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:193:9 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:193:23 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:194:9 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:194:23 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:195:9 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:195:23 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:196:9 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:196:30 • prefer_int_literals
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/image_preprocessor.dart:390:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/image_preprocessor.dart:411:81 • lines_longer_than_80_chars
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:453:9 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:453:23 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:454:9 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:454:23 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:455:9 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:455:23 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:456:9 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:456:30 • prefer_int_literals
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/image_preprocessor.dart:542:81 • lines_longer_than_80_chars
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:554:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:554:19 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:555:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:555:19 • prefer_int_literals
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/image_preprocessor.dart:556:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/image_preprocessor.dart:556:19 • prefer_int_literals
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/image_preprocessor.dart:582:81 • lines_longer_than_80_chars
+   info • Unnecessary duplication of receiver. Try using a cascade to avoid the duplication • lib/src/utils/image_preprocessor.dart:685:7 • cascade_invocations
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/image_preprocessor.dart:711:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/liveness_logger.dart:29:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/liveness_logger.dart:47:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/liveness_logger.dart:50:81 • lines_longer_than_80_chars
+   info • Unnecessary type annotation on a local variable. Try removing the type annotation • lib/src/utils/liveness_logger.dart:59:5 • omit_local_variable_types
+   info • Unnecessary use of a 'double' literal. Try using an 'int' literal • lib/src/utils/liveness_logger.dart:59:21 • prefer_int_literals
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/liveness_logger.dart:68:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/liveness_logger.dart:72:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/liveness_logger.dart:90:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/liveness_logger.dart:93:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • lib/src/utils/liveness_logger.dart:107:81 • lines_longer_than_80_chars
+   info • Missing documentation explaining why the diagnostic is ignored. Try adding a comment immediately above the ignore comment • test/fixtures_test.dart:1:1 • document_ignores
+   info • 'Future'-returning calls in a non-'async' function. Try converting the enclosing function to be 'async' and then 'await' the future, or wrap the expression in 'unawaited' • test/fixtures_test.dart:42:14 • discarded_futures
+   info • Unnecessary duplication of receiver. Try using a cascade to avoid the duplication • test/fixtures_test.dart:58:5 • cascade_invocations
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/fixtures_test.dart:59:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/fixtures_test.dart:62:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/fixtures_test.dart:102:81 • lines_longer_than_80_chars
+   info • Missing documentation explaining why the diagnostic is ignored. Try adding a comment immediately above the ignore comment • test/full_matrix_test.dart:1:1 • document_ignores
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/full_matrix_test.dart:21:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/full_matrix_test.dart:24:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/full_matrix_test.dart:27:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/full_matrix_test.dart:89:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/full_matrix_test.dart:94:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/liveness_enhancements_test.dart:45:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/liveness_enhancements_test.dart:58:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/liveness_enhancements_test.dart:94:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/liveness_enhancements_test.dart:96:81 • lines_longer_than_80_chars
+   info • Use 'isEven' rather than '% 2'. Try using 'isEven' • test/liveness_enhancements_test.dart:100:34 • use_is_even_rather_than_modulo
+   info • Use 'isEven' rather than '% 2'. Try using 'isEven' • test/liveness_enhancements_test.dart:188:34 • use_is_even_rather_than_modulo
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:11:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:28:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:119:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:134:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:159:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:193:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:201:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:253:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:290:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:338:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:357:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:369:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:386:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:401:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:403:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:445:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:491:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:610:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:636:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:645:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:707:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:716:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:760:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:799:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit. Try breaking the line across multiple lines • test/passive_liveness_test.dart:839:81 • lines_longer_than_80_chars
+

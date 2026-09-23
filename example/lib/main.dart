@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:passive_liveness/passive_liveness.dart';
 
@@ -38,7 +40,7 @@ class _LivenessHomePageState extends State<LivenessHomePage> {
   @override
   void initState() {
     super.initState();
-    _initDetector();
+    unawaited(_initDetector());
   }
 
   Future<void> _initDetector() async {
@@ -48,7 +50,7 @@ class _LivenessHomePageState extends State<LivenessHomePage> {
         _initialized = true;
         _status = 'Detector engine ready!';
       });
-    } catch (e) {
+    } on Exception catch (e) {
       setState(() {
         _status = 'Init error: $e';
       });
@@ -58,19 +60,15 @@ class _LivenessHomePageState extends State<LivenessHomePage> {
   /// Generates a valid in-memory PNG image byte array for testing.
   Future<Uint8List> _createSampleImageBytes() async {
     final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder, const Rect.fromLTWH(0, 0, 200, 200));
-
-    // Background skin-tone canvas
-    canvas.drawRect(
-      const Rect.fromLTWH(0, 0, 200, 200),
-      Paint()..color = const Color(0xFFF5D0A9),
-    );
-
-    // Draw face oval
-    canvas.drawOval(
-      const Rect.fromLTWH(40, 30, 120, 140),
-      Paint()..color = const Color(0xFFE5B089),
-    );
+    Canvas(recorder, const Rect.fromLTWH(0, 0, 200, 200))
+      ..drawRect(
+        const Rect.fromLTWH(0, 0, 200, 200),
+        Paint()..color = const Color(0xFFF5D0A9),
+      )
+      ..drawOval(
+        const Rect.fromLTWH(40, 30, 120, 140),
+        Paint()..color = const Color(0xFFE5B089),
+      );
 
     final picture = recorder.endRecording();
     final image = await picture.toImage(200, 200);
@@ -88,7 +86,8 @@ class _LivenessHomePageState extends State<LivenessHomePage> {
 
       final result = await _detector.detectLivenessFromImageBytes(
         imageBytes,
-        boundingBox: const FaceBoundingBox(x: 40, y: 30, width: 120, height: 140),
+        boundingBox:
+            const FaceBoundingBox(x: 40, y: 30, width: 120, height: 140),
       );
 
       setState(() {
@@ -98,7 +97,7 @@ class _LivenessHomePageState extends State<LivenessHomePage> {
             'Logit Diff: ${result.logitDiff.toStringAsFixed(2)}\n'
             'Inference Time: ${result.inferenceTime.inMilliseconds}ms';
       });
-    } catch (e) {
+    } on Exception catch (e) {
       setState(() {
         _status = 'Detection error: $e';
       });
@@ -107,7 +106,7 @@ class _LivenessHomePageState extends State<LivenessHomePage> {
 
   @override
   void dispose() {
-    _detector.dispose();
+    unawaited(_detector.dispose());
     super.dispose();
   }
 
@@ -119,7 +118,7 @@ class _LivenessHomePageState extends State<LivenessHomePage> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

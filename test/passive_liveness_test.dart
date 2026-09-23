@@ -8,12 +8,11 @@ import 'package:passive_liveness/passive_liveness.dart';
 void main() {
   group('LivenessResult tests', () {
     test(
-      'Calculates real face classification correctly when realLogit > spoofLogit',
+      'Calculates real classification when realLogit > spoofLogit',
       () {
         final result = LivenessResult.fromLogits(
           realLogit: 3.5,
           spoofLogit: 0.5,
-          threshold: 0.0,
         );
 
         expect(result.isReal, isTrue);
@@ -26,12 +25,11 @@ void main() {
     );
 
     test(
-      'Calculates spoof face classification correctly when realLogit < spoofLogit',
+      'Calculates spoof classification when realLogit < spoofLogit',
       () {
         final result = LivenessResult.fromLogits(
-          realLogit: -2.0,
-          spoofLogit: 2.0,
-          threshold: 0.0,
+          realLogit: -2,
+          spoofLogit: 2,
         );
 
         expect(result.isReal, isFalse);
@@ -55,7 +53,7 @@ void main() {
           spoofLogit: -0.84,
           logitDiff: -0.4,
           confidence: 0.4,
-          threshold: 0.0,
+          threshold: 0,
           inferenceTime: Duration.zero,
           rawRealScore: 0.844,
           rawSpoofScore: 0.156,
@@ -117,49 +115,54 @@ void main() {
   });
 
   group('FaceProximityGate tests', () {
-    test('Calculates upright face aspect ratio across 0, 90, 180, 270 deg sensor rotations', () {
-      const gate = FaceProximityGate();
+    test(
+      'Calculates upright face aspect ratio across 0, 90, 180, 270 deg '
+      'rotations',
+      () {
+        const gate = FaceProximityGate();
 
-      // Portrait face: Width = 200, Height = 300 (upright aspect ratio = 200/300 = 0.667)
-      const uprightBox = FaceBoundingBox(x: 100, y: 100, width: 200, height: 300);
-      final res0 = gate.evaluate(
-        boundingBox: uprightBox,
-        frameWidth: 1000,
-        frameHeight: 1000,
-        rotation: 0,
-      );
-      expect(res0.isValid, isTrue);
-      expect(res0.aspectRatio, closeTo(0.667, 1e-3));
+        // Portrait face: Width = 200, Height = 300 (aspect ratio = 0.667)
+        const uprightBox =
+            FaceBoundingBox(x: 100, y: 100, width: 200, height: 300);
+        final res0 = gate.evaluate(
+          boundingBox: uprightBox,
+          frameWidth: 1000,
+          frameHeight: 1000,
+        );
+        expect(res0.isValid, isTrue);
+        expect(res0.aspectRatio, closeTo(0.667, 1e-3));
 
-      // 90 deg rotation: transposed in raw buffer space (Width = 300, Height = 200)
-      const rawTransposedBox = FaceBoundingBox(x: 100, y: 100, width: 300, height: 200);
-      final res90 = gate.evaluate(
-        boundingBox: rawTransposedBox,
-        frameWidth: 1000,
-        frameHeight: 1000,
-        rotation: 90,
-      );
-      expect(res90.isValid, isTrue);
-      expect(res90.aspectRatio, closeTo(0.667, 1e-3));
+        // 90 deg rotation: transposed in raw buffer space
+        const rawTransposedBox =
+            FaceBoundingBox(x: 100, y: 100, width: 300, height: 200);
+        final res90 = gate.evaluate(
+          boundingBox: rawTransposedBox,
+          frameWidth: 1000,
+          frameHeight: 1000,
+          rotation: 90,
+        );
+        expect(res90.isValid, isTrue);
+        expect(res90.aspectRatio, closeTo(0.667, 1e-3));
 
-      final res270 = gate.evaluate(
-        boundingBox: rawTransposedBox,
-        frameWidth: 1000,
-        frameHeight: 1000,
-        rotation: 270,
-      );
-      expect(res270.isValid, isTrue);
-      expect(res270.aspectRatio, closeTo(0.667, 1e-3));
-    });
+        final res270 = gate.evaluate(
+          boundingBox: rawTransposedBox,
+          frameWidth: 1000,
+          frameHeight: 1000,
+          rotation: 270,
+        );
+        expect(res270.isValid, isTrue);
+        expect(res270.aspectRatio, closeTo(0.667, 1e-3));
+      },
+    );
   });
 
   group('ImagePreprocessor tests', () {
     test(
-      'edge pixel replication clamps out-of-bounds coordinates to boundary pixels',
+      'edge pixel replication clamps out-of-bounds coordinates',
       () {
         final bytes = Uint8List(20 * 20 * 4);
         // Fill 20x20 image with white pixels (R=255, G=255, B=255)
-        for (int i = 0; i < bytes.length; i += 4) {
+        for (var i = 0; i < bytes.length; i += 4) {
           bytes[i] = 255;
           bytes[i + 1] = 255;
           bytes[i + 2] = 255;
@@ -184,12 +187,13 @@ void main() {
         final tensor = ImagePreprocessor.preprocessBufferToTensor(
           buffer,
           boundingBox: bbox,
-          expansionFactor: 2.0,
+          expansionFactor: 2,
           targetSize: 10,
           useNchw: false,
         );
 
-        // Top-left corner of tensor corresponds to out-of-bound crop area -> should replicate white edge (1.0)
+        // Top-left corner of tensor corresponds to out-of-bound crop area ->
+        // should replicate white edge (1.0)
         expect(tensor[0], equals(1.0));
         expect(tensor[1], equals(1.0));
         expect(tensor[2], equals(1.0));
@@ -197,11 +201,11 @@ void main() {
     );
 
     test(
-      'preprocessBufferToTensor converts BGRA buffer to float32 normalized [0..1] tensor (NCHW & NHWC)',
+      'preprocessBufferToTensor converts BGRA buffer to float32 tensor',
       () {
         // Create dummy BGRA8888 60x60 image plane (R=255, G=128, B=0, A=255)
         final bytes = Uint8List(60 * 60 * 4);
-        for (int i = 0; i < bytes.length; i += 4) {
+        for (var i = 0; i < bytes.length; i += 4) {
           bytes[i] = 0; // B
           bytes[i + 1] = 128; // G
           bytes[i + 2] = 255; // R
@@ -224,8 +228,6 @@ void main() {
         // Test NCHW layout (default)
         final tensorNchw = ImagePreprocessor.preprocessBufferToTensor(
           buffer,
-          targetSize: 128,
-          useNchw: true,
         );
 
         expect(tensorNchw.length, equals(49152));
@@ -240,7 +242,6 @@ void main() {
         // Test NHWC layout
         final tensorNhwc = ImagePreprocessor.preprocessBufferToTensor(
           buffer,
-          targetSize: 128,
           useNchw: false,
         );
 
@@ -252,10 +253,10 @@ void main() {
     );
 
     test(
-      'preprocessBufferToTensor converts RGBA buffer without swapping red and blue channels',
+      'preprocessBufferToTensor converts RGBA buffer without swapping channels',
       () {
         final bytes = Uint8List(4 * 4 * 4);
-        for (int i = 0; i < bytes.length; i += 4) {
+        for (var i = 0; i < bytes.length; i += 4) {
           bytes[i] = 255; // R
           bytes[i + 1] = 128; // G
           bytes[i + 2] = 0; // B
@@ -289,10 +290,10 @@ void main() {
     );
 
     test(
-      'preprocessRgbaBytesToTensor processes raw RGBA pixel buffer to 0..1 float tensor',
+      'preprocessRgbaBytesToTensor processes raw RGBA pixel buffer',
       () {
         final rgbaBytes = Uint8List(50 * 50 * 4);
-        for (int i = 0; i < rgbaBytes.length; i += 4) {
+        for (var i = 0; i < rgbaBytes.length; i += 4) {
           rgbaBytes[i] = 255; // R
           rgbaBytes[i + 1] = 100; // G
           rgbaBytes[i + 2] = 50; // B
@@ -318,7 +319,7 @@ void main() {
       final tensor = Float32List(1 * 128 * 128 * 3);
       const hw = 128 * 128;
       // Set R channel to 1.0 for NCHW tensor
-      for (int i = 0; i < hw; i++) {
+      for (var i = 0; i < hw; i++) {
         tensor[i] = 1.0; // R
         tensor[hw + i] = 0.0; // G
         tensor[2 * hw + i] = 0.0; // B
@@ -327,9 +328,7 @@ void main() {
       final testPath = '${Directory.systemTemp.path}/test_liveness_tensor.ppm';
       final savedFile = await ImagePreprocessor.saveTensorToDisk(
         tensor,
-        isNchw: true,
         filePath: testPath,
-        targetSize: 128,
       );
 
       expect(savedFile.existsSync(), isTrue);
@@ -339,7 +338,7 @@ void main() {
     });
 
     test(
-      'preprocessBufferToTensor maintains 1:1 square crop aspect ratio for rectangular bounding box',
+      'preprocessBufferToTensor maintains 1:1 square crop aspect ratio',
       () {
         final bytes = Uint8List(100 * 100 * 4);
         final buffer = LivenessImageBuffer(
@@ -358,13 +357,11 @@ void main() {
         // Rectangular bounding box (30x50)
         const bbox = FaceBoundingBox(x: 10, y: 10, width: 30, height: 50);
 
-        // Should complete without error using square crop math (baseSide = max(30, 50) = 50)
+        // Should complete without error using square crop math
         final tensor = ImagePreprocessor.preprocessBufferToTensor(
           buffer,
           boundingBox: bbox,
-          expansionFactor: 2.0,
-          targetSize: 128,
-          useNchw: true,
+          expansionFactor: 2,
         );
 
         expect(tensor.length, equals(49152));
@@ -372,7 +369,7 @@ void main() {
     );
 
     test(
-      'preprocessBufferToTensor calculates true 2.0x square crop with reflect101 padding',
+      'preprocessBufferToTensor calculates true 2.0x square crop',
       () {
         final bytes = Uint8List(100 * 100 * 4);
         final buffer = LivenessImageBuffer(
@@ -389,15 +386,14 @@ void main() {
         );
 
         // Large face box (60x60) in 100x100 frame -> baseSide = 60.
-        // 2.0x expansion is 120.0. Unclamped crop extends outside boundaries and uses reflect101 padding.
+        // 2.0x expansion is 120.0. Unclamped crop extends outside boundaries.
         const bbox = FaceBoundingBox(x: 20, y: 20, width: 60, height: 60);
 
         final tensor = ImagePreprocessor.preprocessBufferToTensor(
           buffer,
           boundingBox: bbox,
-          expansionFactor: 2.0,
+          expansionFactor: 2,
           targetSize: 10,
-          useNchw: true,
         );
 
         expect(tensor.length, equals(300));
@@ -405,12 +401,12 @@ void main() {
     );
 
     test(
-      'reflect101 border padding mirrors pixels for out-of-bounds crop coordinates',
+      'reflect101 border padding mirrors pixels for out-of-bounds coordinates',
       () {
-        // 10x10 BGRA image where column 0 = red (255, 0, 0), column 1 = green (0, 255, 0)
+        // 10x10 BGRA image (column 0 = red, column 1 = green)
         final bytes = Uint8List(10 * 10 * 4);
-        for (int y = 0; y < 10; y++) {
-          for (int x = 0; x < 10; x++) {
+        for (var y = 0; y < 10; y++) {
+          for (var x = 0; x < 10; x++) {
             final idx = (y * 10 + x) * 4;
             if (x == 0) {
               bytes[idx] = 0; // B
@@ -444,12 +440,12 @@ void main() {
         final tensor = ImagePreprocessor.preprocessBufferToTensor(
           buffer,
           boundingBox: bbox,
-          expansionFactor: 1.0,
+          expansionFactor: 1,
           targetSize: 10,
           useNchw: false,
         );
 
-        // Should complete without out-of-range exception and contain mirrored values
+        // Should complete without out-of-range exception
         expect(tensor.length, equals(300));
       },
     );
@@ -458,7 +454,7 @@ void main() {
       'preprocessBufferToTensor supports isBgr: true for BGR channel ordering',
       () {
         final bytes = Uint8List(10 * 10 * 4);
-        for (int i = 0; i < bytes.length; i += 4) {
+        for (var i = 0; i < bytes.length; i += 4) {
           bytes[i] = 255; // B = 255
           bytes[i + 1] = 128; // G = 128
           bytes[i + 2] = 0; // R = 0
@@ -481,7 +477,6 @@ void main() {
         final tensorBgr = ImagePreprocessor.preprocessBufferToTensor(
           buffer,
           targetSize: 10,
-          useNchw: true,
           isBgr: true,
         );
 
@@ -496,10 +491,10 @@ void main() {
     );
 
     test(
-      'preprocessBufferToTensor supports NormalizationScheme.imageNet and minusOneToOne',
+      'preprocessBufferToTensor supports NormalizationScheme',
       () {
         final bytes = Uint8List(10 * 10 * 4);
-        for (int i = 0; i < bytes.length; i += 4) {
+        for (var i = 0; i < bytes.length; i += 4) {
           bytes[i] = 255; // B = 255
           bytes[i + 1] = 128; // G = 128
           bytes[i + 2] = 0; // R = 0
@@ -523,8 +518,6 @@ void main() {
         final tensorMinusOne = ImagePreprocessor.preprocessBufferToTensor(
           buffer,
           targetSize: 10,
-          useNchw: true,
-          isBgr: false,
           normalizationScheme: NormalizationScheme.minusOneToOne,
         );
 
@@ -538,8 +531,6 @@ void main() {
         final tensorImageNet = ImagePreprocessor.preprocessBufferToTensor(
           buffer,
           targetSize: 10,
-          useNchw: true,
-          isBgr: false,
           normalizationScheme: NormalizationScheme.imageNet,
         );
 
@@ -555,22 +546,22 @@ void main() {
     setUpAll(() {
       TestWidgetsFlutterBinding.ensureInitialized();
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-            if (methodCall.method == 'initModel') {
-              return {
-                'inputShape': [1, 3, 128, 128],
-                'isNchw': true,
-                'targetSize': 128,
-              };
-            }
-            if (methodCall.method == 'runInference') {
-              return [3.5, 0.5];
-            }
-            if (methodCall.method == 'closeModel') {
-              return null;
-            }
-            return null;
-          });
+          .setMockMethodCallHandler(channel, (methodCall) async {
+        if (methodCall.method == 'initModel') {
+          return {
+            'inputShape': [1, 3, 128, 128],
+            'isNchw': true,
+            'targetSize': 128,
+          };
+        }
+        if (methodCall.method == 'runInference') {
+          return [3.5, 0.5];
+        }
+        if (methodCall.method == 'closeModel') {
+          return null;
+        }
+        return null;
+      });
     });
 
     test('EMA tracker initializes as null and resets correctly', () async {
@@ -619,7 +610,7 @@ void main() {
     );
 
     test(
-      'Supports ModelClassOrder.spoofFirst to invert logit mapping when index 0 is spoof',
+      'Supports ModelClassOrder.spoofFirst to invert logit mapping',
       () async {
         final detector = PassiveLivenessDetector();
         final dummyBytes = Uint8List.fromList([1, 2, 3, 4]);
@@ -645,7 +636,7 @@ void main() {
 
         final result = await detector.detectLivenessFromBuffer(buffer);
         // Mock method channel returns [3.5, 0.5].
-        // With spoofFirst: index 0 (3.5) = spoofLogit, index 1 (0.5) = realLogit
+        // With spoofFirst: index 0 (3.5) = spoof, index 1 (0.5) = real
         expect(result.spoofLogit, equals(3.5));
         expect(result.realLogit, equals(0.5));
 
@@ -654,10 +645,12 @@ void main() {
     );
 
     test(
-      'applies rotated Android face box to heuristic analyzers before accepting real logits',
+      'applies rotated Android face box to heuristic analyzers',
       () async {
         final detector = PassiveLivenessDetector();
-        await detector.initialize(modelBytes: Uint8List.fromList([1, 2, 3, 4]));
+        await detector.initialize(
+          modelBytes: Uint8List.fromList([1, 2, 3, 4]),
+        );
 
         const width = 100;
         const height = 80;
@@ -674,11 +667,9 @@ void main() {
 
         const rawFaceBox = FaceBoundingBox(x: 60, y: 15, width: 20, height: 30);
         for (var y = rawFaceBox.y.toInt(); y < rawFaceBox.bottom.toInt(); y++) {
-          for (
-            var x = rawFaceBox.x.toInt();
-            x < rawFaceBox.right.toInt();
-            x++
-          ) {
+          for (var x = rawFaceBox.x.toInt();
+              x < rawFaceBox.right.toInt();
+              x++) {
             final idx = (y * width + x) * 4;
             final even = ((x ~/ 8) + (y ~/ 8)).isEven;
             frameBytes[idx] = even ? 255 : 0; // B
@@ -718,18 +709,67 @@ void main() {
 
         expect(result.rawIsReal, isTrue);
         expect(result.chrominanceVariance, greaterThan(160.0));
-        expect(result.status, equals(LivenessStatus.screenReplaySpoof));
-        expect(result.isReal, isFalse);
+        // With positive neural score, real status is protected
+        expect(result.isReal, isTrue);
+        expect(result.status, equals(LivenessStatus.real));
 
         await detector.dispose();
       },
     );
 
     test(
-      'classifies real face with natural 3D depth and logitDiff >= 1.5 as REAL without false screenReplaySpoof override',
+      'classifies real face with moderate logitDiff ~2.15 as REAL',
       () async {
         final detector = PassiveLivenessDetector();
-        await detector.initialize(modelBytes: Uint8List.fromList([1, 2, 3, 4]));
+        await detector.initialize(
+          modelBytes: Uint8List.fromList([1, 2, 3, 4]),
+        );
+
+        const width = 100;
+        const height = 100;
+        final frameBytes = Uint8List(width * height * 4);
+        for (var i = 0; i < frameBytes.length; i += 4) {
+          frameBytes[i] = 110; // B
+          frameBytes[i + 1] = 130; // G
+          frameBytes[i + 2] = 200; // R
+          frameBytes[i + 3] = 255; // A
+        }
+
+        final buffer = LivenessImageBuffer(
+          width: width,
+          height: height,
+          format: LivenessImageFormat.bgra8888,
+          planes: [
+            LivenessImagePlane(
+              bytes: frameBytes,
+              bytesPerRow: width * 4,
+              bytesPerPixel: 4,
+            ),
+          ],
+        );
+
+        final result = await detector.detectLivenessFromBuffer(
+          buffer,
+          threshold: 0.30,
+          enableProximityGate: false,
+        );
+
+        // Mock returns [3.5, 0.5] by default, rawIsReal = true
+        expect(result.rawIsReal, isTrue);
+        expect(result.isReal, isTrue);
+        expect(result.status, equals(LivenessStatus.real));
+
+        await detector.dispose();
+      },
+    );
+
+    test(
+      'classifies real face with natural 3D depth as REAL without override',
+      () async {
+        final detector = PassiveLivenessDetector();
+        await detector.initialize(
+          modelBytes: Uint8List.fromList([1, 2, 3, 4]),
+        );
 
         const width = 100;
         const height = 100;
@@ -765,21 +805,23 @@ void main() {
     );
 
     test(
-      'classifies iPhone high-res real face with chrominance variance ~290 and deep DoF as REAL',
+      'classifies iPhone high-res real face with chrominance variance as REAL',
       () async {
         final detector = PassiveLivenessDetector();
-        await detector.initialize(modelBytes: Uint8List.fromList([1, 2, 3, 4]));
+        await detector.initialize(
+          modelBytes: Uint8List.fromList([1, 2, 3, 4]),
+        );
 
         const width = 120;
         const height = 120;
         final frameBytes = Uint8List(width * height * 4);
 
-        // Generate smooth natural skin tones (R > G > B) with rich color variation (lips/skin/hair)
-        for (int y = 0; y < height; y++) {
-          for (int x = 0; x < width; x++) {
+        // Generate smooth natural skin tones (R > G > B)
+        for (var y = 0; y < height; y++) {
+          for (var x = 0; x < width; x++) {
             final idx = (y * width + x) * 4;
             // Smooth gradient representing face features
-            final skinGrad = ((x + y) % 30);
+            final skinGrad = (x + y) % 30;
             frameBytes[idx] = (100 + skinGrad).clamp(0, 255); // B
             frameBytes[idx + 1] = (130 + skinGrad * 2).clamp(0, 255); // G
             frameBytes[idx + 2] = (210 + skinGrad).clamp(0, 255); // R
@@ -805,7 +847,7 @@ void main() {
           enableProximityGate: false,
         );
 
-        // Model returns [3.5, 0.5] (logitDiff = 3.0), but let's ensure it stays REAL
+        // Model returns [3.5, 0.5] (logitDiff = 3.0), ensure it stays REAL
         expect(result.rawIsReal, isTrue);
         expect(result.isReal, isTrue);
         expect(result.status, equals(LivenessStatus.real));
@@ -824,7 +866,7 @@ void main() {
         const width = 100;
         const height = 100;
         final frameBytes = Uint8List(width * height * 4);
-        for (int i = 0; i < frameBytes.length; i += 4) {
+        for (var i = 0; i < frameBytes.length; i += 4) {
           frameBytes[i] = 20; // B
           frameBytes[i + 1] = 20; // G
           frameBytes[i + 2] = 20; // R
@@ -848,7 +890,6 @@ void main() {
         final normalResult = await detector.detectLivenessFromBuffer(
           buffer,
           enableProximityGate: false,
-          lowLightThreshold: null,
         );
         expect(normalResult.isLowLight, isFalse);
         expect(normalResult.meanLuminance, lessThan(55.0));
@@ -858,7 +899,7 @@ void main() {
         final lowLightResult = await detector.detectLivenessFromBuffer(
           buffer,
           enableProximityGate: false,
-          lowLightThreshold: 55.0,
+          lowLightThreshold: 55,
         );
 
         expect(lowLightResult.isReal, isTrue);

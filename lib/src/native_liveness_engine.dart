@@ -2,16 +2,19 @@ import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 
-/// Target class index ordering produced by binary neural model classification logits.
+/// Target class index ordering produced by binary neural model classification
+/// logits.
 enum ModelClassOrder {
   /// Index 0: Real Face, Index 1: Spoof Face (default).
   realFirst,
 
-  /// Index 0: Spoof Face, Index 1: Real Face (common in PyTorch ImageFolder sorted datasets).
+  /// Index 0: Spoof Face, Index 1: Real Face (common in PyTorch ImageFolder
+  /// sorted datasets).
   spoofFirst,
 }
 
-/// Lightweight platform channel engine that delegates TFLite neural inference to native OS runtime.
+/// Lightweight platform channel engine that delegates TFLite neural inference
+/// to native OS runtime.
 ///
 /// On Android, uses Google Play Services TFLite module (0MB APK size increase).
 /// On iOS, uses TensorFlowLiteSwift (~3-5MB download impact).
@@ -25,7 +28,8 @@ class NativeLivenessEngine {
   /// Whether the native TFLite interpreter model has been loaded.
   bool get isModelLoaded => _isModelLoaded;
 
-  /// Model input tensor shape returned from native runtime (e.g. [1, 3, 128, 128]).
+  /// Model input tensor shape returned from native runtime
+  /// (e.g. [1, 3, 128, 128]).
   List<int>? modelInputShape;
 
   /// Whether the model natively expects NCHW format (`[1, 3, H, W]`).
@@ -71,7 +75,7 @@ class NativeLivenessEngine {
       );
     }
 
-    final result = await _channel.invokeMethod<List>('runInference', {
+    final result = await _channel.invokeMethod<List<dynamic>>('runInference', {
       'inputData': tensorData.buffer.asUint8List(),
     });
 
@@ -107,7 +111,7 @@ class NativeLivenessEngine {
     if (_isModelLoaded) {
       try {
         await _channel.invokeMethod('closeModel');
-      } catch (_) {}
+      } on Exception catch (_) {}
       _isModelLoaded = false;
     }
   }
