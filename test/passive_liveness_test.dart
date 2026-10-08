@@ -555,7 +555,7 @@ void main() {
           };
         }
         if (methodCall.method == 'runInference') {
-          return [3.5, 0.5];
+          return [4.5, 0.5];
         }
         if (methodCall.method == 'closeModel') {
           return null;

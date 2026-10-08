@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/services.dart';
-
 import 'package:passive_liveness/src/models/face_bounding_box.dart';
 import 'package:passive_liveness/src/models/liveness_image_buffer.dart';
 import 'package:passive_liveness/src/models/liveness_result.dart';
@@ -488,6 +487,28 @@ class PassiveLivenessDetector {
     var calculatedStatus =
         isThresholdPassed ? LivenessStatus.real : LivenessStatus.spoof;
 
+    // Define spoof signal conditions
+    final isScreenSubPixelGrid = hogDominance != null &&
+        hogDominance >= 0.380 &&
+        lbpRatio != null &&
+        lbpRatio < 0.280 &&
+        chrominanceVar != null &&
+        chrominanceVar >= 200.0;
+
+    final isEmissiveDisplayLighting =
+        chrominanceVar != null && chrominanceVar >= 220.0;
+
+    final isAnySpoofSignal = isPrintSpoof ||
+        (isEmissiveDisplayLighting &&
+            (isScreenGridSpoof ||
+                isScreenReplaySpoof ||
+                isHighResScreenSpoof ||
+                isEmissiveScreenSpoof ||
+                is2DFlatSpoof ||
+                isEmissiveSaturationSpoof ||
+                isMoireSpoof ||
+                isScreenSubPixelGrid));
+
     // Low-Light Auto-Acceptance Safeguard:
     // When lowLightThreshold is provided and face luminance is below it,
     // auto-accept as real.
@@ -495,42 +516,35 @@ class PassiveLivenessDetector {
       calculatedStatus = LivenessStatus.real;
     }
 
+    // Genuine 3D Depth Rescue (Low-Light / Dark Skin / Textured Face)
+    // Dark face pixels or highly textured faces can suppress neural logits.
+    // If the image exhibits large 3D focal depth and zero physical spoof
+    // signals, rescue the decision to real.
+    if (calculatedStatus == LivenessStatus.spoof && !isLowLight) {
+      final hasStrong3DDepth = laplacianDelta != null && laplacianDelta >= 0.30;
+      if (hasStrong3DDepth && !isAnySpoofSignal && !isMoireSpoof) {
+        calculatedStatus = LivenessStatus.real;
+      }
+    }
+
     // Multi-Factor Decision Fusion Engine:
     // Calibrated physical spoof indicators override neural real score only
     // when unequivocal attack signals exist.
     if (calculatedStatus == LivenessStatus.real && !isLowLight) {
-      final isScreenSubPixelGrid = hogDominance != null &&
-          hogDominance >= 0.380 &&
-          lbpRatio != null &&
-          lbpRatio < 0.280 &&
-          chrominanceVar != null &&
-          chrominanceVar >= 200.0;
-
-      final isEmissiveDisplayLighting =
-          chrominanceVar != null && chrominanceVar >= 220.0;
-
-      final isAnySpoofSignal = isPrintSpoof ||
-          (isEmissiveDisplayLighting &&
-              (isScreenGridSpoof ||
-                  isScreenReplaySpoof ||
-                  isHighResScreenSpoof ||
-                  isEmissiveScreenSpoof ||
-                  is2DFlatSpoof ||
-                  isEmissiveSaturationSpoof ||
-                  isMoireSpoof ||
-                  isScreenSubPixelGrid));
-
       // Neural certainty safeguard:
-      // When the neural network rates the frame as real
-      // (rawResult.logitDiff >= 0.0 or realLogit > spoofLogit),
-      // prioritize genuine real users and do not allow soft micro-texture,
-      // saturation variance, or chrominance variation to cause false
-      // rejections. Only unequivocal physical attack signals (Moiré FFT
-      // interference fringes) can override neural real scores.
+      // When the neural model has strong real certainty
+      // (logitDiff >= 4.0 & laplacianDelta >= 0.20),
+      // physical heuristic overrides are bypassed to protect real users.
+      // Otherwise, on moderate neural scores (logitDiff < 4.0) or flat
+      // 2D focal planes, calibrated physical spoof signals directly
+      // override the decision.
+      // Only unequivocal physical attack signals (Moiré FFT interference
+      // fringes) can override strong neural real scores.
       final isExtremeAttackSignal = isMoireSpoof;
 
-      final isConfidentNeuralReal =
-          rawResult.logitDiff >= 0.0 && !isExtremeAttackSignal;
+      final isConfidentNeuralReal = rawResult.logitDiff >= 4.0 &&
+          (laplacianDelta != null && laplacianDelta >= 0.20) &&
+          !isExtremeAttackSignal;
 
       if (isAnySpoofSignal && !isConfidentNeuralReal) {
         if (isPrintSpoof &&
