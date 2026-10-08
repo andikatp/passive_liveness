@@ -1,3 +1,8 @@
+## 0.1.3
+
+- **Genuine 3D Depth Rescue (Dark Skin / Textured Faces)**: Added a multi-factor decision rescue safeguard for legitimate users with dark or highly textured skin whose neural scores drop due to out-of-distribution logit suppression. The heuristics now intervene to safely rescue the decision to `REAL` if strong 3D focal depth ($\Delta_{\text{Lap}} \ge 0.30$) is detected alongside zero physical spoof signals (no Moiré, screen grids, or 2D flatness).
+- **Restored Neural Certainty Safeguard Calibration**: Fixed a regression that incorrectly bypassed physical heuristic overrides on any positive neural score (`logitDiff >= 0.0`). Re-calibrated the strong neural certainty threshold back to `logitDiff >= 4.0` in conjunction with `laplacianDelta >= 0.20` to guarantee that moderate neural scores are still strictly validated against physical presentation attacks.
+
 ## 0.1.2
 
 - **Optimized Real User Pass Rate & Reduced False Screen Replay Spoof Rejections**:
